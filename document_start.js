@@ -37,6 +37,50 @@ setTimeout(function(){
 
 //document.getElementById('xc-footer--terms').click();
 
+var elementsList = new Array();
 
+// TODO: GPC Checker
+function GPCChecker(){
 
+}
 
+// TODO: Extract Elements
+// return [elem1, elem2, ...]
+function extractElements(){
+
+}
+
+// TODO: Extract Text
+// return [String1, String2, ...]
+function extractText(elemList){
+
+}
+
+// TODO: @Naimu @Xiaoxin Text mining
+// input: [String1, String2,...]
+// output: [0/1: whether this website declares it will not sell data ,[3,1,2,...]
+// (level, 1 = do not sell 2 = privacy settings/policy)]
+function textMining(stringList){
+
+}
+
+// TODO: filter results, only reserve related elements
+function filterResult(resultList){
+
+}
+
+// TODO: Create peer button on the extension page, onclick = click original buttons on the page.
+// @ Jack
+// elemObject: {category: 0/1... (0 = do not sell, 1 = delete my data); id: xxx-xxx-xxx}
+// defaultDoNotSell: true/false whether this website declares it will not sell data
+// doNotSellText: related text paragraphs.
+// No output
+function createPeerButton(elementObjList, defaultDoNotSell,doNotSellText){
+    // document.getElementById('elem1.id').click();
+}
+
+// DB Fields
+// Host, defaultDNS, supportGPC, supportDNS, have-set(local), DNS-text
+function localDatabase(){
+    // ...
+}
