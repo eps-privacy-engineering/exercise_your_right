@@ -1,15 +1,12 @@
 {
 "update_url": "https://clients2.google.com/service/update2/crx",
 
-	"name": "GPC enabler",
+	"name": "GPC exercise your right",
 	"version": "1.0.1",
 	"manifest_version": 2,
 	"homepage_url": "https://juancroldan.com/",
 	"description": "Enable Global Privacy Control on Google Chrome (non-official).",
 	"icons": {
-		"16": "16.png",
-		"48": "48.png",
-		"128": "128.png"
 	},
 	"background": {
 		"scripts": ["background.js"]
