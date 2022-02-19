@@ -12,8 +12,8 @@ function httpGet(theUrl)
     return xmlHttp.responseText;
 }
 
-console.log(httpGet("https://www.xfinity.com/privacy/manage-preference"));
-console.log("CALL GET");
+//console.log(httpGet("https://www.xfinity.com/privacy/manage-preference"));
+//console.log("CALL GET");
 
 //console.log("Hi3");
 //if (window.location.href!="https://www.xfinity.com/privacy/manage-preference"){
@@ -21,15 +21,15 @@ console.log("CALL GET");
 //}
 //console.log("Hi4");
 
-setTimeout(function(){
-    var elems=document.body.getElementsByTagName("*");//Do Not Sell My Personal Information
-    console.log("Hi5",elems);
-    for(var i=0;i<elems.length;i++){
-        console.log("tag6",elems[i].textContent);
-        console.log("tag7",elems[i].innerText);
-        console.log("tag8",elems[i].href);
-    }
-}, 2000);
+//setTimeout(function(){
+//    var elems=document.body.getElementsByTagName("*");//Do Not Sell My Personal Information
+//    console.log("Hi5",elems);
+//    for(var i=0;i<elems.length;i++){
+//        console.log("tag6",elems[i].textContent);
+//        console.log("tag7",elems[i].innerText);
+//        console.log("tag8",elems[i].href);
+//    }
+//}, 2000);
 
 //document.getElementById('digital-footer-bottom-link-bottom-9').click();
 
@@ -37,7 +37,7 @@ setTimeout(function(){
 
 //document.getElementById('xc-footer--terms').click();
 
-var elementsList = new Array();
+
 
 // TODO: GPC Checker
 function GPCChecker(){
@@ -47,8 +47,35 @@ function GPCChecker(){
 // TODO: Extract Elements
 // return [elem1, elem2, ...]
 function extractElements(){
-
+    var elemTextList=[];
+//    setTimeout(function(){
+        var  elems=document.body.getElementsByTagName("*");
+        for(var i=0;i<elems.length;i++){
+            elemTextList.push(elems[i].textContent);
+//            console.log("tag6",elems[i].textContent);
+//            console.log("tag7",elems[i].innerText);
+//            console.log("tag8",elems[i].href);
+        }
+//    }, 2000);
+    return elemTextList;
 }
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function delayedGreeting() {
+  await sleep(2000);
+  var elementsList = extractElements();
+  console.log("elementsList",elementsList);
+  console.log("Goodbye!",elementsList[1211]);
+}
+
+delayedGreeting();
+
+
+
+
+
 
 // TODO: Extract Text
 // return [String1, String2, ...]
