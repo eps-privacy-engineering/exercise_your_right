@@ -38,11 +38,24 @@ function httpGet(theUrl)
 //document.getElementById('xc-footer--terms').click();
 
 
-
-// TODO: GPC Checker
+//GPC Checker: currently, this works on DuckDuckGo.com, but not sure if other sites follow the same structure.
+// https://developer.mozilla.org/en-US/docs/Web/API/Window/location
+// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
 function GPCChecker(){
-
+    let currentUrl = location.href;
+    console.log(currentUrl);
+    let wellKnownObject = ".well-known/gpc.json";
+    let urlToObject = currentUrl + wellKnownObject;
+    console.log(urlToObject);
+    function reqListener () {
+        console.log(this.responseText);
+    }
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.addEventListener("load", reqListener);
+    xmlHttp.open( "GET", urlToObject, false ); // false for synchronous request
+    xmlHttp.send();
 }
+GPCChecker();
 
 // TODO: Extract Elements
 // return [elem1, elem2, ...]
@@ -75,8 +88,6 @@ delayedGreeting();
 
 
 
-
-
 // TODO: Extract Text
 // return [String1, String2, ...]
 function extractText(elemList){
@@ -102,7 +113,7 @@ function filterResult(resultList){
 // defaultDoNotSell: true/false whether this website declares it will not sell data
 // doNotSellText: related text paragraphs.
 // No output
-function createPeerButton(elementObjList, defaultDoNotSell,doNotSellText){
+function useOptOut(elementObjList, defaultDoNotSell,doNotSellText){
     // document.getElementById('elem1.id').click();
 }
 
