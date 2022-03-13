@@ -38,7 +38,7 @@ function httpGet(theUrl)
 //document.getElementById('xc-footer--terms').click();
 
 
-//GPC Checker: currently, this works on DuckDuckGo.com, but not sure if other sites follow the same structure.
+//GPC Checker: currently, I think this should work for any site listed on https://well-known.dev/?q=resource:%22gpc%22#results.
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/location
 // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
 function GPCChecker(){
@@ -53,7 +53,7 @@ function GPCChecker(){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.addEventListener("load", reqListener);
     xmlHttp.open( "GET", urlToObject, false ); // false for synchronous request
-    xmlHttp.send();
+    // xmlHttp.send();
 }
 GPCChecker();
 
@@ -113,9 +113,24 @@ function filterResult(resultList){
 // defaultDoNotSell: true/false whether this website declares it will not sell data
 // doNotSellText: related text paragraphs.
 // No output
-function useOptOut(elementObjList, defaultDoNotSell,doNotSellText){
+async function useOptOut(elementObjList, defaultDoNotSell,doNotSellText){
     // document.getElementById('elem1.id').click();
+    // https://stackoverflow.com/questions/3813294/how-to-get-element-by-innertext
+
+    await sleep(2000);
+    var aTags = [].slice.call(document.getElementsByTagName("a"));
+    console.log(aTags.length);
+    var searchText = "Do Not Sell My Personal Information";
+    var found;
+    console.log("test");
+    for (let i = 0; i < aTags.length; i++) {
+        if (aTags[i].outerText == searchText) {
+            found = aTags[i];
+            break;
+        }
+    }
 }
+useOptOut();
 
 // DB Fields
 // Host, defaultDNS, supportGPC, supportDNS, have-set(local), DNS-text

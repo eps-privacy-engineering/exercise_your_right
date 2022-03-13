@@ -19,7 +19,6 @@
 	"permissions": [
 		"webRequest",
 		"webRequestBlocking",
-		"<all_urls>",
-		"tabs"
+		"<all_urls>"
 	]
 }
