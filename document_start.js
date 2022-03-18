@@ -1,8 +1,32 @@
-console.log("Hi");
 const script = document.createElement('script');
 script.innerHTML = 'Object.defineProperty(navigator, \'globalPrivacyControl\', {get: () => true, set: (v) => {}});';
 (document.head || document.documentElement).appendChild(script);
 script.parentNode.removeChild(script);
+
+function sendhttpPOST(url, parsefunc, req) {
+    var value;
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function () {
+        if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+            var json = httpRequest.responseText;
+            parsefunc(json)
+        }
+    };
+    httpRequest.open('POST', url, true);
+    reqJSON = JSON.stringify(req)
+    httpRequest.send(reqJSON);
+    console.log(httpRequest.responseText)
+    return httpRequest.responseText
+}
+
+function testParser(respJSON){
+    console.log("test parser")
+    console.log(respJSON)
+}
+
+req = new Object()
+req.host = "www.xfinity.com"
+sendhttpPOST("http://127.0.0.1:8080/get_website_attr",testParser,req)
 
 function httpGet(theUrl)
 {
@@ -23,12 +47,12 @@ console.log("CALL GET");
 
 setTimeout(function(){
     var elems=document.body.getElementsByTagName("*");//Do Not Sell My Personal Information
-    console.log("Hi5",elems);
+    /*console.log("Hi5",elems);
     for(var i=0;i<elems.length;i++){
         console.log("tag6",elems[i].textContent);
         console.log("tag7",elems[i].innerText);
         console.log("tag8",elems[i].href);
-    }
+    }*/
 }, 2000);
 
 //document.getElementById('digital-footer-bottom-link-bottom-9').click();
@@ -47,7 +71,8 @@ function GPCChecker(){
 // TODO: Extract Elements
 // return [elem1, elem2, ...]
 function extractElements(){
-
+    var elems=document.body.getElementsByTagName("*");//Do Not Sell My Personal Information
+    return elems;
 }
 
 // TODO: Extract Text
