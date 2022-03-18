@@ -36,8 +36,8 @@ function httpGet(theUrl)
     return xmlHttp.responseText;
 }
 
-console.log(httpGet("https://www.xfinity.com/privacy/manage-preference"));
-console.log("CALL GET");
+//console.log(httpGet("https://www.xfinity.com/privacy/manage-preference"));
+//console.log("CALL GET");
 
 //console.log("Hi3");
 //if (window.location.href!="https://www.xfinity.com/privacy/manage-preference"){
@@ -45,35 +45,62 @@ console.log("CALL GET");
 //}
 //console.log("Hi4");
 
-setTimeout(function(){
-    var elems=document.body.getElementsByTagName("*");//Do Not Sell My Personal Information
-    /*console.log("Hi5",elems);
-    for(var i=0;i<elems.length;i++){
-        console.log("tag6",elems[i].textContent);
-        console.log("tag7",elems[i].innerText);
-        console.log("tag8",elems[i].href);
-    }*/
-}, 2000);
-
 //document.getElementById('digital-footer-bottom-link-bottom-9').click();
 
 //<a class="xc-footer--terms-link" href="https://www.xfinity.com/privacy/manage-preference" id="xc-footer--terms">Do Not Sell My Personal Information</a>
 
 //document.getElementById('xc-footer--terms').click();
 
-var elementsList = new Array();
 
-// TODO: GPC Checker
+//GPC Checker: currently, I think this should work for any site listed on https://well-known.dev/?q=resource:%22gpc%22#results.
+// https://developer.mozilla.org/en-US/docs/Web/API/Window/location
+// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
 function GPCChecker(){
-
+    let currentUrl = location.href;
+    console.log(currentUrl);
+    let wellKnownObject = ".well-known/gpc.json";
+    let urlToObject = currentUrl + wellKnownObject;
+    console.log(urlToObject);
+    function reqListener () {
+        console.log(this.responseText);
+    }
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.addEventListener("load", reqListener);
+    xmlHttp.open( "GET", urlToObject, false ); // false for synchronous request
+    // xmlHttp.send();
 }
+GPCChecker();
 
 // TODO: Extract Elements
 // return [elem1, elem2, ...]
 function extractElements(){
-    var elems=document.body.getElementsByTagName("*");//Do Not Sell My Personal Information
-    return elems;
+    var elemTextList=[];
+//    setTimeout(function(){
+        var  elems=document.body.getElementsByTagName("*");
+        for(var i=0;i<elems.length;i++){
+            elemTextList.push(elems[i].textContent);
+//            console.log("tag6",elems[i].textContent);
+//            console.log("tag7",elems[i].innerText);
+//            console.log("tag8",elems[i].href);
+        }
+//    }, 2000);
+    return elemTextList;
 }
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function delayedGreeting() {
+  await sleep(2000);
+  var elementsList = extractElements();
+  console.log("elementsList",elementsList);
+  console.log("Goodbye!",elementsList[1211]);
+}
+
+delayedGreeting();
+
+
+
 
 // TODO: Extract Text
 // return [String1, String2, ...]
@@ -100,9 +127,24 @@ function filterResult(resultList){
 // defaultDoNotSell: true/false whether this website declares it will not sell data
 // doNotSellText: related text paragraphs.
 // No output
-function createPeerButton(elementObjList, defaultDoNotSell,doNotSellText){
+async function useOptOut(elementObjList, defaultDoNotSell,doNotSellText){
     // document.getElementById('elem1.id').click();
+    // https://stackoverflow.com/questions/3813294/how-to-get-element-by-innertext
+
+    await sleep(2000);
+    var aTags = [].slice.call(document.getElementsByTagName("a"));
+    console.log(aTags.length);
+    var searchText = "Do Not Sell My Personal Information";
+    var found;
+    console.log("test");
+    for (let i = 0; i < aTags.length; i++) {
+        if (aTags[i].outerText == searchText) {
+            found = aTags[i];
+            break;
+        }
+    }
 }
+useOptOut();
 
 // DB Fields
 // Host, defaultDNS, supportGPC, supportDNS, have-set(local), DNS-text
