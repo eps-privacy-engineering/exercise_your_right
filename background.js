@@ -1,3 +1,5 @@
+console.log("Hi2");
+
 chrome.webRequest.onBeforeSendHeaders.addListener(
 	function(details) {
 		details.requestHeaders.push({name: 'Sec-GPC', value: '1'});
