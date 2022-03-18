@@ -24,10 +24,6 @@ function testParser(respJSON){
     console.log(respJSON)
 }
 
-req = new Object()
-req.host = "www.xfinity.com"
-sendhttpPOST("http://127.0.0.1:8080/get_website_attr",testParser,req)
-
 function httpGet(theUrl)
 {
     var xmlHttp = new XMLHttpRequest();
