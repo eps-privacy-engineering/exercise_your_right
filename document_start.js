@@ -63,7 +63,7 @@ function GPCChecker(){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.addEventListener("load", reqListener);
     xmlHttp.open( "GET", urlToObject, false ); // false for synchronous request
-    // xmlHttp.send();
+    xmlHttp.send();
 }
 GPCChecker();
 
