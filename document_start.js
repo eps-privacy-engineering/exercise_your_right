@@ -2,6 +2,7 @@ const script = document.createElement('script');
 script.innerHTML = 'Object.defineProperty(navigator, \'globalPrivacyControl\', {get: () => true, set: (v) => {}});';
 (document.head || document.documentElement).appendChild(script);
 script.parentNode.removeChild(script);
+updateDemo()
 
 function sendhttpPOST(url, parsefunc, req) {
     var value;
@@ -140,10 +141,29 @@ async function useOptOut(elementObjList, defaultDoNotSell,doNotSellText){
         }
     }
 }
-useOptOut();
+useOptOubt();
 
-// DB Fields
-// Host, defaultDNS, supportGPC, supportDNS, have-set(local), DNS-text
-function localDatabase(){
-    // ...
+function updateDemo(){
+    console.log("now test update")
+    req = new Object()
+    req.host = "www.cmu2.edu"
+    detail = new Object()
+    detail.right_type = "CCPADelete"
+    detail.exercise_path = new Array()
+    node1 = new Object()
+    node1.text = "Privacy Policies"
+    node1.category = "input"
+    node1.operation_type = "click"
+    node1.html_id = "a7"
+    detail.exercise_path.push(node1)
+
+    node2 = new Object()
+    node2.text = "Delete my data"
+    node2.category = "input"
+    node2.operation_type = "click"
+    node2.html_id = "a9"
+    detail.exercise_path.push(node2)
+
+    req.exercise_detail = detail
+    sendhttpPOST("http://127.0.0.1:8080/update_website_attr",testParser,req)
 }
