@@ -97,10 +97,6 @@ function extracttextElements(){
     }
     return elemTextList
 }
-//if we need plain text only
-function extractText(){
-    return extracttextElements()[0]
-}
 
 //get required information
 function filterResult(result){
