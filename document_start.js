@@ -88,18 +88,14 @@ delayedGreeting();
 // text searching part 
 // return1: [String1, String2, ...]
 // return2 dictionary {topic: link}
-function extractElements(){
+function extracttextElements(){
     var elemTextList=[];
     var dict = new Object();
-        var  elems=document.body.getElementsByTagName("*");
-        for(var i=0;i<elems.length;i++){
-            elemTextList.push(elems[i].textContent)
-            if (elems[i].href) 
-            {
-            dict[elemTextList[i]]=elems[i].href
-            }
-        }
-    return [elemTextList, dict]
+    var  elems=document.getElementsByTagName("*");
+    for(var i=0;i<elems.length;i++){
+    elemTextList.push([elems[i].textContent,elems[i].tagName, elems[i].href, elems[i].id])
+    }
+    return elemTextList
 }
 //if we need plain text only
 function extractText(){
@@ -107,66 +103,38 @@ function extractText(){
 }
 
 //get required information
-// resultDict=extractElement()[1]
-//first get three kinds of links
-function filterResult_text_link_pair(resultDict){
-    var DNS_link=[];
-    var priacy_policy_link=[];
-    var data_collection_link=[];
+function filterResult(result){
+    var information=[];
     const text1=/do not sell|do not share|do not collect/ig
     const text2=/privacy policy/ig
-    const text3=/data collection/ig
-    for (const [key, value] of Object.entries(resultDict)) 
-    {
-      if (key.match(text1))
-        {
-            DNS_link.push([key, value])
-        }
-      else if (key.match(text2))
-        {
-            priacy_policy_link.push([key, value])
-        }
-      else if (key.match(text3))
-        {
-            data_collection_link.push([key, value])
-        }
+    const text3=/CCPA|California Comsumer Privacy Act/ig
+    const text4=/data collection/ig
+    var count = result.length;
+    for(var i = 0; i < count; i++) {
+        var item = result[i];
+        if (typeof item[0] !== "undefined" ){
+        
+          if (item[0].match(text1))
+            {
+                information.push(["Do Not Sell", item[1], item[2], item[3],item[4]])
+            }
+          else if (item[0].match(text2))
+            {
+                information.push(["Privacy Policy", item[1], item[2], item[3],item[4]])
+            }
+          else if (item[0].match(text3))
+            {
+                information.push(["CCPA", item[1], item[2], item[3],item[4]])
+            }
+          else if (item[0].match(text4))
+            {
+                information.push(["Data Collection", item[1], item[2], item[3],item[4]])
+            }
+     }
     }
-    return [DNS_link,priacy_policy_link,data_collection_link]
+    return information
 }
 
-//get plain privacy-related text information
-//resultList==extractElement()[0]
-function filterResult_keyword(resultDict){
-    var DNS_key_word=[];
-    var priacy_policy_key_word=[];
-    var CCPA_key_word=[]
-    var Data_collection_key_word=[]
-    const text1=/do not sell|do not share|do not collect/ig
-    const text2=/privacy policy/ig
-    const text3=/CCPA|california resident|California Consumer Privacy Act/ig
-    const text4=/data collection/ig
-     for(var i=0;i<resultDict.length;i++) 
-    {
-      if (resultDict[i].match(text1))
-        {
-            DNS_key_word.push(resultDict[i])
-        }
-      else if (resultDict[i].match(text2))
-        {
-            priacy_policy_key_word.push(resultDict[i])
-        }
-      else if (resultDict[i].match(text3))
-        {
-            CCPA_key_word.push(resultDict[i])
-        }
-      else if (resultDict[i].match(text4))
-        {
-            Data_collection_key_word.push(resultDict[i])
-        }
-    }
-    return [DNS_key_word,priacy_policy_key_word, CCPA_key_word,Data_collection_key_word]
-}
-//e.g. filterResult_text_link_pair(extracttextElements()[1])
 
 // TODO: Create peer button on the extension page, onclick = click original buttons on the page.
 // @ Jack
