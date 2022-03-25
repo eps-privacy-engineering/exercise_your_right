@@ -104,7 +104,9 @@ function filterResult(result){
     const text1=/do not sell|do not share|do not collect/ig
     const text2=/privacy policy/ig
     const text3=/CCPA|California Comsumer Privacy Act/ig
-    const text4=/data collection/ig
+    const text4=/opt out|opt in|opt-in|opt-out/ig
+    //const text5=/data collection/ig
+    
     var count = result.length;
     for(var i = 0; i < count; i++) {
         var item = result[i];
@@ -124,12 +126,13 @@ function filterResult(result){
             }
           else if (item[0].match(text4))
             {
-                information.push(["Data Collection", item[1], item[2], item[3],item[4]])
+                information.push(["opt out", item[1], item[2], item[3],item[4]])
             }
      }
     }
     return information
 }
+
 
 
 // TODO: Create peer button on the extension page, onclick = click original buttons on the page.
