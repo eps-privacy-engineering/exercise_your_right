@@ -1,24 +1,19 @@
 {
 	"name": "GPC exercise your right",
-	"version": "1.0.1",
-	"manifest_version": 2,
+	"version": "1.0.2",
+	"manifest_version": 3,
 	"description": "Enable Global Privacy Control on Google Chrome (non-official).",
 	"icons": {
 	},
-	"browser_action": {
+	"action": {
 		"default_popup": "popup.html"
 	},
 	"background": {
-		"scripts": ["background.js"]
+		"service_worker": "background.js"
 	},
 	"content_scripts": [{
 		"run_at": "document_start",
 		"js": ["document_start.js"],
 		"matches": ["<all_urls>"]
-	}],
-	"permissions": [
-		"webRequest",
-		"webRequestBlocking",
-		"<all_urls>"
-	]
+	}]
 }
