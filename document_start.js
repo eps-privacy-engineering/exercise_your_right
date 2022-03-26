@@ -1,113 +1,127 @@
-console.log("Hi");
+console.log("Hello");
 const script = document.createElement('script');
 script.innerHTML = 'Object.defineProperty(navigator, \'globalPrivacyControl\', {get: () => true, set: (v) => {}});';
 (document.head || document.documentElement).appendChild(script);
 script.parentNode.removeChild(script);
 
-function httpGet(theUrl)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
-}
-
-//console.log(httpGet("https://www.xfinity.com/privacy/manage-preference"));
-//console.log("CALL GET");
-
-//console.log("Hi3");
-//if (window.location.href!="https://www.xfinity.com/privacy/manage-preference"){
-//    window.location="https://www.xfinity.com/privacy/manage-preference";
-//}
-//console.log("Hi4");
-
-//setTimeout(function(){
-//    var elems=document.body.getElementsByTagName("*");//Do Not Sell My Personal Information
-//    console.log("Hi5",elems);
-//    for(var i=0;i<elems.length;i++){
-//        console.log("tag6",elems[i].textContent);
-//        console.log("tag7",elems[i].innerText);
-//        console.log("tag8",elems[i].href);
-//    }
-//}, 2000);
-
-//document.getElementById('digital-footer-bottom-link-bottom-9').click();
-
-//<a class="xc-footer--terms-link" href="https://www.xfinity.com/privacy/manage-preference" id="xc-footer--terms">Do Not Sell My Personal Information</a>
-
-//document.getElementById('xc-footer--terms').click();
 
 
-
-// TODO: GPC Checker
+//GPC Checker: currently, I think this should work for any site listed on https://well-known.dev/?q=resource:%22gpc%22#results.
+// https://developer.mozilla.org/en-US/docs/Web/API/Window/location
+// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
 function GPCChecker(){
+    let currentUrl = location.href;
+    console.log(currentUrl);
+    let wellKnownObject = ".well-known/gpc.json";
+    let urlToObject = currentUrl + wellKnownObject;
+    console.log(urlToObject);
+    function reqListener () {
+        console.log(this.responseText);
+    }
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.addEventListener("load", reqListener);
+    xmlHttp.open( "GET", urlToObject, false ); // false for synchronous request
+    xmlHttp.send();
+}
+GPCChecker();
 
+
+function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// TODO: Extract Elements
-// return [elem1, elem2, ...]
-function extractElements(){
-    var elemTextList=[];
-//    setTimeout(function(){
-        var  elems=document.body.getElementsByTagName("*");
-        for(var i=0;i<elems.length;i++){
-            elemTextList.push(elems[i].textContent);
-//            console.log("tag6",elems[i].textContent);
-//            console.log("tag7",elems[i].innerText);
-//            console.log("tag8",elems[i].href);
+
+// text searching part
+// return1: [String1, String2, ...]
+// return2 dictionary {topic: link}
+function extracttextElements() {
+    var elemTextList = [];
+    var elems = document.getElementsByTagName("*");
+    for (var i = 0; i < elems.length; i++) {
+        elemTextList.push([elems[i].textContent, elems[i].tagName, elems[i].href, elems[i].id])
+    }
+    return elemTextList
+}
+
+//get required information
+function filterResult(result) {
+    var information = {};
+    information["Do Not Sell"] = [];
+    information["CCPA-delete"] = [];
+    information["Opt-out/in"] = [];
+    information["Privacy Policy"] = [];
+    information["CCPA-only"] = [];
+    const text1 = /do not sell|do not share|do not collect/ig
+    const text2 = /CCPA.*delete|delete my information|delete-my-information/ig
+    const text3 = /opt out|opt in|opt-in|opt-out/ig
+    const text4 = /privacy policy|privacy-policy/ig
+    const text5 = /CCPA|California Comsumer Privacy Act/ig
+    //const text5=/data collection/ig
+
+    var count = result.length;
+    for (var i = 0; i < count; i++) {
+        var item = result[i];
+        if (typeof item[0] !== "undefined" && (typeof item[2] !== "undefined" || item[1] === 'BUTTON')) {
+            if (item[0].match(text1)) {
+                information["Do Not Sell"].push([item[0], item[1], item[2], item[3]])
+            } else if (item[0].match(text2)) {
+                information["CCPA-delete"].push([item[0], item[1], item[2], item[3]])
+            } else if (item[0].match(text3)) {
+                information["Opt-out/in"].push([item[0], item[1], item[2], item[3]])
+            } else if (item[0].match(text4)) {
+                information["Privacy Policy"].push([item[0], item[1], item[2], item[3]])
+            } else if (item[0].match(text5)) {
+                information["CCPA-only"].push([item[0], item[1], item[2], item[3]])
+            }
         }
-//    }, 2000);
-    return elemTextList;
+    }
+    return information
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+
+// var host = window.location.host;
+function generate_json() {
+    var attr_list = ["ccpa_do_not_sell", "ccpa_delete", "ccpa_opt_out_in", "ccpa_privacy_policy", "ccpa_copy"];
+    var right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAOpOutIn", "CCPAPrivacyPolicy", "CCPACopy"];
+    var info_list = ["Do Not Sell", "CCPA-delete", "Opt-out/in", "Privacy Policy", "CCPA-only"];
+
+    function update(i, key_word_element) {
+        var type = attr_list[i];
+        dict_one_host[type]["text"] = key_word_element[0]; // "Delete my data"
+        dict_one_host[type]["category"] = key_word_element[1]; // "input"
+        if (key_word_element[1] === "A" | key_word_element[1] === "BUTTON" || key_word_element[1] === "input") {
+            dict_one_host[type]["operation_type"] = "click"; // "click"
+        } else {
+            dict_one_host[type]["operation_type"] = "text"; // todo
+        }
+        dict_one_host[type]["url"] = key_word_element[2];
+        dict_one_host[type]["html_id"] = key_word_element[3];
+    }
+
+    var dict_one_host = {};
+    var result = extracttextElements();
+    var all_key_word = filterResult(result);
+
+    for (let i = 0; i < 5; i++) {
+        if (all_key_word[info_list[i]].length > 0) {
+            dict_one_host[attr_list[i]] = {};
+            dict_one_host[attr_list[i]]["right_type"] = right_type_list[i];
+            // for (const key_word_element of all_key_word[info_list[i]]) {
+            key_word_element=all_key_word[info_list[i]][0];
+            update(i, key_word_element);
+            //     break;
+            // }
+        }
+    }
+    console.log("~~~\n\n\n\n");
+    console.log(dict_one_host);
 }
+
+
 async function delayedGreeting() {
-  await sleep(2000);
-  var elementsList = extractElements();
-  console.log("elementsList",elementsList);
-  console.log("Goodbye!",elementsList[1211]);
+    await sleep(2000);
+    generate_json();
 }
 
 delayedGreeting();
-
-
-
-
-
-
-// TODO: Extract Text
-// return [String1, String2, ...]
-function extractText(elemList){
-
-}
-
-// TODO: @Naimu @Xiaoxin Text mining
-// input: [String1, String2,...]
-// output: [0/1: whether this website declares it will not sell data ,[3,1,2,...]
-// (level, 1 = do not sell 2 = privacy settings/policy)]
-function textMining(stringList){
-
-}
-
-// TODO: filter results, only reserve related elements
-function filterResult(resultList){
-
-}
-
-// TODO: Create peer button on the extension page, onclick = click original buttons on the page.
-// @ Jack
-// elemObject: {category: 0/1... (0 = do not sell, 1 = delete my data); id: xxx-xxx-xxx}
-// defaultDoNotSell: true/false whether this website declares it will not sell data
-// doNotSellText: related text paragraphs.
-// No output
-function createPeerButton(elementObjList, defaultDoNotSell,doNotSellText){
-    // document.getElementById('elem1.id').click();
-}
-
-// DB Fields
-// Host, defaultDNS, supportGPC, supportDNS, have-set(local), DNS-text
-function localDatabase(){
-    // ...
-}
+// fetch_page(dict_one_host);
