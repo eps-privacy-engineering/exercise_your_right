@@ -177,7 +177,6 @@ async function useOptOut(elementObjList, defaultDoNotSell,doNotSellText){
 async function delayedGreeting() {
     await sleep(2000);
     dict_one_host=generate_json();
-    delayedGreeting();
-    useOptOut();
+//     useOptOut();
 }
-
+delayedGreeting();
