@@ -67,21 +67,9 @@ function GPCChecker(){
 }
 GPCChecker();
 
-// TODO: Extract Elements
-// return [elem1, elem2, ...]
-function extractElements(){
-    var elemTextList=[];
-//    setTimeout(function(){
-        var  elems=document.body.getElementsByTagName("*");
-        for(var i=0;i<elems.length;i++){
-            elemTextList.push(elems[i].textContent);
-//            console.log("tag6",elems[i].textContent);
-//            console.log("tag7",elems[i].innerText);
-//            console.log("tag8",elems[i].href);
-        }
-//    }, 2000);
-    return elemTextList;
-}
+
+
+
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -97,25 +85,81 @@ delayedGreeting();
 
 
 
-
-// TODO: Extract Text
-// return [String1, String2, ...]
-function extractText(elemList){
-
+// text searching part 
+// return1: [String1, String2, ...]
+// return2 dictionary {topic: link}
+function extracttextElements(){
+    var elemTextList=[];
+    var dict = new Object();
+    var  elems=document.getElementsByTagName("*");
+    for(var i=0;i<elems.length;i++){
+    elemTextList.push([elems[i].textContent,elems[i].tagName, elems[i].href, elems[i].id])
+    }
+    return elemTextList
 }
 
-// TODO: @Naimu @Xiaoxin Text mining
-// input: [String1, String2,...]
-// output: [0/1: whether this website declares it will not sell data ,[3,1,2,...]
-// (level, 1 = do not sell 2 = privacy settings/policy)]
-function textMining(stringList){
-
+//get required information
+function filterResult(result){
+    var information=new Object();
+    information["Do Not Sell"]=[];
+    information["CCPA-delete"]=[];
+    information["Opt-out/in"]=[];
+    information["Privacy Policy"]=[];
+    information["CCPA-only"]=[];
+    const text1=/do not sell|do not share|do not collect/ig
+    const text2=/CCPA.*delete|delete my information|delete-my-information/ig
+    const text3=/opt out|opt in|opt-in|opt-out/ig
+    const text4=/privacy policy|privacy-policy/ig
+    const text5=/CCPA|California Comsumer Privacy Act/ig
+    //const text5=/data collection/ig
+    
+    var count = result.length;
+    for(var i = 0; i < count; i++) {
+        var item = result[i];
+        if (typeof item[0] !== "undefined" && (typeof item[2] !== "undefined" || item[1]== 'BUTTON'))
+        {
+        
+          if (item[0].match(text1))
+            {
+                information["Do Not Sell"].push( [item[1], item[2], item[3]])
+            }
+          else if (item[0].match(text2))
+            {
+                information["CCPA-delete"].push([item[1], item[2], item[3]])
+            }
+          else if (item[0].match(text3))
+            {
+                information["Opt-out/in"].push([item[1], item[2], item[3]])
+            }
+          else if (item[0].match(text4))
+            {
+                information["Privacy Policy"].push([item[1], item[2], item[3]])
+            }
+          else if (item[0].match(text5))
+            {
+                information["CCPA-only"].push([item[1], item[2], item[3]])
+            }  
+     }
+    }
+    if (information["Do Not Sell"].length===0){
+        information["Do Not Sell"].push("No Do Not Sell mentioned")
+    }
+    if (information["CCPA-delete"].length===0){
+        information["CCPA-delete"].push("No CCPA delete my information mentioned ")
+    }
+    if (information["Opt-out/in"].length===0){
+        information["Opt-out/in"].push("No opt out/in mentioned")
+    }
+    if (information["Privacy Policy"].length===0){
+        information["Privacy Policy"].push("No privacy policy")
+    }
+    if (information["CCPA-only"].length===0){
+        information["CCPA-only"].push("No CCPA mentioned")
+    }
+    return information
 }
 
-// TODO: filter results, only reserve related elements
-function filterResult(resultList){
 
-}
 
 // TODO: Create peer button on the extension page, onclick = click original buttons on the page.
 // @ Jack
