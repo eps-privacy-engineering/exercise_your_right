@@ -5,6 +5,32 @@ script.innerHTML = 'Object.defineProperty(navigator, \'globalPrivacyControl\', {
 script.parentNode.removeChild(script);
 
 
+function sendhttpPOST(url, parsefunc, req) {
+    var value;
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function () {
+        if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+            var json = httpRequest.responseText;
+            parsefunc(json)
+        }
+    };
+    httpRequest.open('POST', url, true);
+    reqJSON = JSON.stringify(req)
+    httpRequest.send(reqJSON);
+    console.log(httpRequest.responseText)
+    return httpRequest.responseText
+}
+
+
+function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+
 
 //GPC Checker: currently, I think this should work for any site listed on https://well-known.dev/?q=resource:%22gpc%22#results.
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/location
@@ -26,9 +52,11 @@ function GPCChecker(){
 GPCChecker();
 
 
+
 function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
 
 
 // text searching part
@@ -79,8 +107,8 @@ function filterResult(result) {
 }
 
 
-// var host = window.location.host;
 function generate_json() {
+    // var host = window.location.host;
     var attr_list = ["ccpa_do_not_sell", "ccpa_delete", "ccpa_opt_out_in", "ccpa_privacy_policy", "ccpa_copy"];
     var right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAOpOutIn", "CCPAPrivacyPolicy", "CCPACopy"];
     var info_list = ["Do Not Sell", "CCPA-delete", "Opt-out/in", "Privacy Policy", "CCPA-only"];
@@ -115,13 +143,41 @@ function generate_json() {
     }
     console.log("~~~\n\n\n\n");
     console.log(dict_one_host);
+    return dict_one_host;
+}
+
+
+
+
+// TODO: Create peer button on the extension page, onclick = click original buttons on the page.
+// @ Jack
+// elemObject: {category: 0/1... (0 = do not sell, 1 = delete my data); id: xxx-xxx-xxx}
+// defaultDoNotSell: true/false whether this website declares it will not sell data
+// doNotSellText: related text paragraphs.
+// No output
+async function useOptOut(elementObjList, defaultDoNotSell,doNotSellText){
+    // document.getElementById('elem1.id').click();
+    // https://stackoverflow.com/questions/3813294/how-to-get-element-by-innertext
+
+    await sleep(2000);
+    var aTags = [].slice.call(document.getElementsByTagName("a"));
+    console.log(aTags.length);
+    var searchText = "Do Not Sell My Personal Information";
+    var found;
+    console.log("test");
+    for (let i = 0; i < aTags.length; i++) {
+        if (aTags[i].outerText == searchText) {
+            found = aTags[i];
+            break;
+        }
+    }
 }
 
 
 async function delayedGreeting() {
     await sleep(2000);
-    generate_json();
+    dict_one_host=generate_json();
+    delayedGreeting();
+    useOptOut();
 }
 
-delayedGreeting();
-// fetch_page(dict_one_host);
