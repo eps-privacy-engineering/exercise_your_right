@@ -1,19 +1,3 @@
-// "www.xfinity.com": {
-//  "ccpa_do_not_sell": {
-//   "right_type": "CCPA_Sell",
-//   "exercise_path": [
-//    {
-//     "text": "Do Not Sell My Personal Information",
-//     "category": "href",
-//     "operation_type": "click"
-//    }
-//   ]
-//  },
-//  "ccpa_delete": null,
-//  "ccpa_copy": null
-// }
-
-
 var host = window.location.host;
 
 function update(type,key_word_element){
@@ -25,7 +9,7 @@ function update(type,key_word_element){
 // GetWebsiteAttrRequest will give NULL if none.
 var attr_list=["ccpa_do_not_sell","ccpa_delete","ccpa_copy","ccpa_privacy_policy"];
 var right_type_list=["CCPADoNotSell","CCPADelete","CCPACopy","CCPAPrivacyPolicy"];
-
+var info_list=["Do Not Sell", "CCPA-delete","Opt-out/in","Privacy Policy","CCPA-only"];
 
 // this is ok, I commit it and make a copy just to check modification
 // var dict_one_host=JSON.parse(GetWebsiteAttrRequest(host));
@@ -34,10 +18,13 @@ var dict_one_host = Object.assign({}, dict_one_host_origin);
 
 if (!(("ccpa_do_not_sell" in dict_one_host) && ("ccpa_delete" in dict_one_host) && ("ccpa_copy" in dict_one_host))) {
     // go to website to get attr
-    all_key_word=filterResult_keyword(resultDict);
+    var result=extracttextElements();
+    filterResult(result);
+    all_key_word=filterResult(result);
+    // all_key_word=filterResult_keyword(resultDict);
 
-    for (let i = 0; i < 4; i++) {
-        if (((!(attr_list[i] in dict_one_host) && (all_key_word[i].length > 0)))
+    for (let i = 0; i < 5; i++) {
+        if (((!(attr_list[i] in dict_one_host) && (all_key_word[info_list[i]].length > 0)))
             ||
             (dict_one_host[attr_list[i]]["exercise_path"].length < all_key_word[i].length)
         ) {
