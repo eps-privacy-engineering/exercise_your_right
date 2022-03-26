@@ -100,35 +100,61 @@ function extracttextElements(){
 
 //get required information
 function filterResult(result){
-    var information=[];
+    var information=new Object();
+    information["Do Not Sell"]=[];
+    information["CCPA-delete"]=[];
+    information["Opt-out/in"]=[];
+    information["Privacy Policy"]=[];
+    information["CCPA-only"]=[];
     const text1=/do not sell|do not share|do not collect/ig
-    const text2=/privacy policy/ig
-    const text3=/CCPA|California Comsumer Privacy Act/ig
-    const text4=/opt out|opt in|opt-in|opt-out/ig
+    const text2=/CCPA.*delete|delete my information|delete-my-information/ig
+    const text3=/opt out|opt in|opt-in|opt-out/ig
+    const text4=/privacy policy|privacy-policy/ig
+    const text5=/CCPA|California Comsumer Privacy Act/ig
     //const text5=/data collection/ig
     
     var count = result.length;
     for(var i = 0; i < count; i++) {
         var item = result[i];
-        if (typeof item[0] !== "undefined" ){
+        if (typeof item[0] !== "undefined" && (typeof item[2] !== "undefined" || item[1]== 'BUTTON'))
+        {
         
           if (item[0].match(text1))
             {
-                information.push(["Do Not Sell", item[1], item[2], item[3],item[4]])
+                information["Do Not Sell"].push( [item[1], item[2], item[3]])
             }
           else if (item[0].match(text2))
             {
-                information.push(["Privacy Policy", item[1], item[2], item[3],item[4]])
+                information["CCPA-delete"].push([item[1], item[2], item[3]])
             }
           else if (item[0].match(text3))
             {
-                information.push(["CCPA", item[1], item[2], item[3],item[4]])
+                information["Opt-out/in"].push([item[1], item[2], item[3]])
             }
           else if (item[0].match(text4))
             {
-                information.push(["opt out", item[1], item[2], item[3],item[4]])
+                information["Privacy Policy"].push([item[1], item[2], item[3]])
             }
+          else if (item[0].match(text5))
+            {
+                information["CCPA-only"].push([item[1], item[2], item[3]])
+            }  
      }
+    }
+    if (information["Do Not Sell"].length===0){
+        information["Do Not Sell"].push("No Do Not Sell mentioned")
+    }
+    if (information["CCPA-delete"].length===0){
+        information["CCPA-delete"].push("No CCPA delete my information mentioned ")
+    }
+    if (information["Opt-out/in"].length===0){
+        information["Opt-out/in"].push("No opt out/in mentioned")
+    }
+    if (information["Privacy Policy"].length===0){
+        information["Privacy Policy"].push("No privacy policy")
+    }
+    if (information["CCPA-only"].length===0){
+        information["CCPA-only"].push("No CCPA mentioned")
     }
     return information
 }
