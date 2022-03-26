@@ -1,3 +1,75 @@
+var dict_all = {
+    "www.xfinity.com": {
+        "privacy_policy_updated_yet":1,
+        "privacy_policy_link":"http://www.xfinity.com/privacy/policy",
+        "ccpa_OptOut": "http://www.xfinity.com/privacy/opt-out",
+        "ccpa_DoNotSell": "https://www.xfinity.com/privacy/manage-preference",
+        "": "<button></button>",
+        "ccpa_do_not_sell_gpc":
+            {
+                "text": "Privacy Policies",
+                "category": "input",
+                "operation_type": "click",
+                "html_id": "a7"
+            },
+    }
+}
+<a> href="~" dns</a>
+var dict_all1={
+    "www.cmu.edu": {
+    "ccpa_do_not_sell": null,
+        "ccpa_delete": {
+        "right_type": "CCPADelete",
+            "exercise_path": [
+            {
+                "text": "Privacy Policies",
+                "category": "input",
+                "operation_type": "click",
+                "html_id": "a7"
+            },
+            {
+                "text": "Delete my data",
+                "category": "input",
+                "operation_type": "click",
+                "html_id": "a9"
+            }
+        ]
+    },
+    "ccpa_copy": null
+},
+    "www.cmu2.edu": {
+    "ccpa_do_not_sell": null,
+        "ccpa_delete": {
+        "right_type": "CCPADelete",
+            "exercise_path": [
+            {
+                "text": "Privacy Policies",
+                "category": "input",
+                "operation_type": "click",
+                "html_id": "a7"
+            },
+            {
+                "text": "Delete my data",
+                "category": "input",
+                "operation_type": "click",
+                "html_id": "a9"
+            }
+        ]
+    },
+    "ccpa_copy": null
+}
+}
+
+// if (dict["privacy_policy_visited_yet"]===1){
+//     fetch_page(dict);
+// } else{
+//     if (当前页面===dict["privacy_policy_link"]){
+//         刷；
+//     } else{
+//         不刷；fetch_page 里有 pop——up(dict["privacy_policy_link"]);
+//     }
+// }
+
 // Several potential html Element
 
 // href with tag a
