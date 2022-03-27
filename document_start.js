@@ -193,20 +193,26 @@ function generate_json() {
 
 // elemObject: JSON of data gathered from host site (dict_one_host)
 async function useOptOut(JSONDict){
-    await sleep(5000);
-    const text=/http/ig
-    if(JSONDict["ccpa_do_not_sell"]["url"].match(text)){
-        let doNotSellURL = JSONDict["ccpa_do_not_sell"]["url"];
-        return doNotSellURL;
+    //await sleep(5000);
+    //const text=/http/ig
+    if(JSONDict["ccpa_do_not_sell"]["url"]!= undefined){
+       if (JSONDict["ccpa_do_not_sell"]["url"]!== "o"){
+            let doNotSellURL = JSONDict["ccpa_do_not_sell"]["url"];
+            return doNotSellURL;
+       }
     }
-    else if (JSONDict["ccpa_privacy_policy"]["url"].match(text)){
-        let privPolURL = JSONDict["ccpa_privacy_policy"]["url"];
-        return privPolURL;
+    else if (JSONDict["ccpa_privacy_policy"]["url"]!= undefined){
+        if (JSONDict["ccpa_privacy_policy"]["url"]!== "o"){
+            let privPolURL = JSONDict["ccpa_privacy_policy"]["url"];
+            return privPolURL;
+        }
     }
     else {
         return null;
     }
 }
+
+
 
 
 async function delayedGreeting() {
