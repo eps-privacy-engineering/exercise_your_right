@@ -165,10 +165,7 @@ function generate_json() {
         dict_one_host[type]["url"] = key_word_element[2];
         dict_one_host[type]["html_id"] = key_word_element[3];
     }
-<<<<<<< HEAD
-    if (information["delete information"].length===0){
-        information["delete information"].push("No CCPA delete my information mentioned ")
-=======
+
 
     var dict_one_host = {};
     var result = extracttextElements();
@@ -184,7 +181,6 @@ function generate_json() {
             //     break;
             // }
         }
->>>>>>> 4b0d909a6eec16e57c9626e7b8b223143d5d5d57
     }
     console.log("~~~\n\n\n\n");
     return dict_one_host;
