@@ -1,12 +1,22 @@
 window.onload = function () {
-	function updateLabel() {
-		var enabled = chrome.extension.getBackgroundPage().enabled;
-		document.getElementById('toggle_button').value = enabled ? "Disable" : "Enable";
+	chrome.storage.sync.get(['gpcKey'], function(result) {
+		console.log('GPC value currently is ' + result.gpcKey);
+		document.getElementById("gpc-received").append(result.gpcKey);
+	});
+
+
+	document.getElementById('ccpa-button').onclick = function () {
+		chrome.storage.sync.get(['optOutKey'], function(result) {
+			console.log('Privacy info value currently is ' + result.optOutKey);
+			if (result.optOutKey == null){
+				const para = document.createElement('p');
+				para.innerHTML = "No privacy information available.";
+				document.body.appendChild(para);
+			}
+		else {
+				console.log('test href');
+				window.open(result.optOutKey, "_blank");
+			}
+		});
 	}
-	document.getElementById('toggle_button').onclick = function () {
-		var background = chrome.extension.getBackgroundPage();
-		background.enabled = !background.enabled;
-		updateLabel();
-	};
-	updateLabel();
 }
