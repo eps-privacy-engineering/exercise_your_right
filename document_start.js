@@ -92,7 +92,7 @@ function filterResult(result){
     const text3=/opt out|opt in|opt-in|opt-out|opt_out|opt_in|optin|optout/ig
     const text4=/privacy policy|privacy-policy|privacy-notice|privacy_policy|privacy_notice|privacy notice|privacy.*a>|<.*a.*privacy/ig
     const text5=/CCPA|California Comsumer Privacy Act|Califormia-Consumer-Privacy-Act/ig
-    //const text5=/data collection/ig
+    const text6=/privacy/ig
     
     var count = result.length;
     for(var i = 0; i < count; i++) {
@@ -117,11 +117,12 @@ function filterResult(result){
                 information["Privacy Policy"].push([item[1], item[2], item[3]])
             }
           else if (typeof item[2] !== "undefined")
-              if (item[2].match(/privacy/ig)){
+            {
+              if (item[2].match(text6))
                 {
                 information["Privacy Policy"].push([item[1], item[2], item[3]])
                 }
-              }
+            }
           else if (item[0].match(text5))
             {
                 information["CCPA-only"].push([item[1], item[2], item[3]])
@@ -157,13 +158,13 @@ function generate_json() {
         var type = attr_list[i];
         dict_one_host[type]["text"] = key_word_element[0]; // "Delete my data"
         dict_one_host[type]["category"] = key_word_element[1]; // "input"
-        if (key_word_element[1] === "A" | key_word_element[1] === "BUTTON" || key_word_element[1] === "input") {
+        if (key_word_element[0] === "A" || key_word_element[0] === "BUTTON" || key_word_element[0] === "input") {
             dict_one_host[type]["operation_type"] = "click"; // "click"
         } else {
             dict_one_host[type]["operation_type"] = "text"; // todo
         }
-        dict_one_host[type]["url"] = key_word_element[2];
-        dict_one_host[type]["html_id"] = key_word_element[3];
+        dict_one_host[type]["url"] = key_word_element[1];
+        dict_one_host[type]["html_id"] = key_word_element[2];
     }
 
 
@@ -189,14 +190,16 @@ function generate_json() {
 
 
 
+
 // elemObject: JSON of data gathered from host site (dict_one_host)
 async function useOptOut(JSONDict){
     await sleep(5000);
-    if(JSONDict["ccpa_do_not_sell"] != undefined){
+    const text=/http/ig
+    if(JSONDict["ccpa_do_not_sell"]["url"].match(text)){
         let doNotSellURL = JSONDict["ccpa_do_not_sell"]["url"];
         return doNotSellURL;
     }
-    else if (JSONDict["ccpa_privacy_policy"] != undefined){
+    else if (JSONDict["ccpa_privacy_policy"]["url"].match(text)){
         let privPolURL = JSONDict["ccpa_privacy_policy"]["url"];
         return privPolURL;
     }
@@ -204,7 +207,6 @@ async function useOptOut(JSONDict){
         return null;
     }
 }
-
 
 
 async function delayedGreeting() {
