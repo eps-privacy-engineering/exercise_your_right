@@ -102,21 +102,21 @@ function extracttextElements(){
 function filterResult(result){
     var information=new Object();
     information["Do Not Sell"]=[];
-    information["CCPA-delete"]=[];
+    information["delete information"]=[];
     information["Opt-out/in"]=[];
     information["Privacy Policy"]=[];
     information["CCPA-only"]=[];
-    const text1=/do not sell|do not share|do not collect/ig
-    const text2=/CCPA.*delete|delete my information|delete-my-information/ig
-    const text3=/opt out|opt in|opt-in|opt-out/ig
-    const text4=/privacy policy|privacy-policy/ig
-    const text5=/CCPA|California Comsumer Privacy Act/ig
+    const text1=/do not sell|do not share|do not collect|do-not-sell|do_not_sell|do-not-share|do_not_share|do-not-collect|do_not_collect/ig
+    const text2=/CCPA.*delete|delete my data|delete-my-data|delete_my_data |remove my data|remove-my-data|remove_my_data|remove personal info|remove-personal-info|remove_personal_info|delete my info|delete-my-info|delete_my_info|remove my info|remove-my-info|remove_my_info|remove your info|remove-your-info|remove_your_info/ig
+    const text3=/opt out|opt in|opt-in|opt-out|opt_out|opt_in|optin|optout/ig
+    const text4=/privacy policy|privacy-policy|privacy-notice|privacy_policy|privacy_notice|privacy notice|privacy.*a>|<a.*privacy|/ig
+    const text5=/CCPA|California Comsumer Privacy Act|Califormia-Consumer-Privacy-Act/ig
     //const text5=/data collection/ig
     
     var count = result.length;
     for(var i = 0; i < count; i++) {
         var item = result[i];
-        if (typeof item[0] !== "undefined" && (typeof item[2] !== "undefined" || item[1]== 'BUTTON'))
+        if (typeof item[0] !== "undefined")
         {
         
           if (item[0].match(text1))
@@ -125,7 +125,7 @@ function filterResult(result){
             }
           else if (item[0].match(text2))
             {
-                information["CCPA-delete"].push([item[1], item[2], item[3]])
+                information["delete information"].push([item[1], item[2], item[3]])
             }
           else if (item[0].match(text3))
             {
@@ -144,8 +144,8 @@ function filterResult(result){
     if (information["Do Not Sell"].length===0){
         information["Do Not Sell"].push("No Do Not Sell mentioned")
     }
-    if (information["CCPA-delete"].length===0){
-        information["CCPA-delete"].push("No CCPA delete my information mentioned ")
+    if (information["delete information"].length===0){
+        information["delete information"].push("No CCPA delete my information mentioned ")
     }
     if (information["Opt-out/in"].length===0){
         information["Opt-out/in"].push("No opt out/in mentioned")
