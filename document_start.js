@@ -151,7 +151,7 @@ function generate_json() {
     // var host = window.location.host;
     var attr_list = ["ccpa_do_not_sell", "ccpa_delete", "ccpa_opt_out_in", "ccpa_privacy_policy", "ccpa_copy"];
     var right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAOpOutIn", "CCPAPrivacyPolicy", "CCPACopy"];
-    var info_list = ["Do Not Sell", "CCPA-delete", "Opt-out/in", "Privacy Policy", "CCPA-only"];
+    var info_list = ["Do Not Sell", "delete information", "Opt-out/in", "Privacy Policy", "CCPA-only"];
 
     function update(i, key_word_element) {
         var type = attr_list[i];
