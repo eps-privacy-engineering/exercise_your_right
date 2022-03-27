@@ -1,0 +1,14 @@
+.button{
+    background-color: lightgreen;
+    border-radius: 8px;
+}
+
+body {
+    font-family: Monaco;
+    width: 300px;
+}
+
+p {
+    border: 2px solid powderblue;
+    margin: 5px;
+}
