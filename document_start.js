@@ -109,7 +109,7 @@ function filterResult(result){
     const text1=/do not sell|do not share|do not collect|do-not-sell|do_not_sell|do-not-share|do_not_share|do-not-collect|do_not_collect/ig
     const text2=/CCPA.*delete|delete my data|delete-my-data|delete_my_data |remove my data|remove-my-data|remove_my_data|remove personal info|remove-personal-info|remove_personal_info|delete my info|delete-my-info|delete_my_info|remove my info|remove-my-info|remove_my_info|remove your info|remove-your-info|remove_your_info/ig
     const text3=/opt out|opt in|opt-in|opt-out|opt_out|opt_in|optin|optout/ig
-    const text4=/privacy policy|privacy-policy|privacy-notice|privacy_policy|privacy_notice|privacy notice|privacy.*a>|<a.*privacy|/ig
+    const text4=/privacy policy|privacy-policy|privacy-notice|privacy_policy|privacy_notice|privacy notice|privacy.*a>|<.*a.*privacy/ig
     const text5=/CCPA|California Comsumer Privacy Act|Califormia-Consumer-Privacy-Act/ig
     //const text5=/data collection/ig
     
@@ -135,6 +135,12 @@ function filterResult(result){
             {
                 information["Privacy Policy"].push([item[1], item[2], item[3]])
             }
+          else if (typeof item[2] !== "undefined")
+              if (item[2].match(/privacy/ig)){
+                {
+                information["Privacy Policy"].push([item[1], item[2], item[3]])
+                }
+              }
           else if (item[0].match(text5))
             {
                 information["CCPA-only"].push([item[1], item[2], item[3]])
