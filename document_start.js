@@ -43,6 +43,11 @@ function GPCChecker(){
     console.log(urlToObject);
     function reqListener () {
         console.log(this.responseText);
+        let jsonObj = JSON.parse(this.responseText)
+        chrome.storage.sync.set({gpcKey: jsonObj.gpc}, function() {
+            console.log('stored opt out info is: '+ jsonObj.gpc);
+        })
+
     }
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.addEventListener("load", reqListener);
@@ -149,34 +154,32 @@ function generate_json() {
 
 
 
-// TODO: Create peer button on the extension page, onclick = click original buttons on the page.
-// @ Jack
-// elemObject: {category: 0/1... (0 = do not sell, 1 = delete my data); id: xxx-xxx-xxx}
-// defaultDoNotSell: true/false whether this website declares it will not sell data
-// doNotSellText: related text paragraphs.
-// No output
-async function useOptOut(elementObjList, defaultDoNotSell,doNotSellText){
-    // document.getElementById('elem1.id').click();
-    // https://stackoverflow.com/questions/3813294/how-to-get-element-by-innertext
-
-    await sleep(2000);
-    var aTags = [].slice.call(document.getElementsByTagName("a"));
-    console.log(aTags.length);
-    var searchText = "Do Not Sell My Personal Information";
-    var found;
-    console.log("test");
-    for (let i = 0; i < aTags.length; i++) {
-        if (aTags[i].outerText == searchText) {
-            found = aTags[i];
-            break;
-        }
+// elemObject: JSON of data gathered from host site (dict_one_host)
+async function useOptOut(JSONDict){
+    await sleep(5000);
+    if(JSONDict["ccpa_do_not_sell"] != undefined){
+        let doNotSellURL = JSONDict["ccpa_do_not_sell"]["url"];
+        return doNotSellURL;
+    }
+    else if (JSONDict["ccpa_privacy_policy"] != undefined){
+        let privPolURL = JSONDict["ccpa_privacy_policy"]["url"];
+        return privPolURL;
+    }
+    else {
+        return null;
     }
 }
 
 
+
 async function delayedGreeting() {
     await sleep(2000);
-    dict_one_host=generate_json();
-//     useOptOut();
+    let dict_one_host = generate_json();
+    return useOptOut(dict_one_host);
+
 }
-delayedGreeting();
+delayedGreeting().then(function(result){
+    chrome.storage.sync.set({optOutKey: result}, function() {
+        console.log('stored opt out info is: '+ result);
+    })
+});
