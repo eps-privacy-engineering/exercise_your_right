@@ -42,12 +42,15 @@ function GPCChecker(){
     let urlToObject = currentUrl + wellKnownObject;
     console.log(urlToObject);
     function reqListener () {
+        if(this.status == 404){
+            console.log("gpc not detected");
+            return;
+        }
         console.log(this.responseText);
         let jsonObj = JSON.parse(this.responseText)
         chrome.storage.sync.set({gpcKey: jsonObj.gpc}, function() {
             console.log('stored opt out info is: '+ jsonObj.gpc);
         })
-
     }
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.addEventListener("load", reqListener);
@@ -147,7 +150,6 @@ function generate_json() {
         }
     }
     console.log("~~~\n\n\n\n");
-    console.log(dict_one_host);
     return dict_one_host;
 }
 
