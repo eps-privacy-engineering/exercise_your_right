@@ -172,7 +172,7 @@ async function useOptOut(JSONDict){
     }
 }
 
-
+var thisURL;
 
 async function delayedGreeting() {
     await sleep(2000);
@@ -181,7 +181,24 @@ async function delayedGreeting() {
 
 }
 delayedGreeting().then(function(result){
-    chrome.storage.sync.set({optOutKey: result}, function() {
-        console.log('stored opt out info is: '+ result);
+    hostName = window.location.hostname;
+    keyName = "optOutKey_"+hostName
+    console.log("key name is "+keyName)
+    chrome.storage.sync.set({keyName: result}, function() {
+        console.log('stored opt out info is: '+ result, 'to ',keyName);
     })
 });
+
+/*async function daemon(){
+    while(1) {
+        await sleep(1000);
+        console.log("this is ", window.location.href,"dict host is ",generate_json());
+        if(window.location.href!=thisURL){
+            console.log("different! prev is",thisURL);
+            thisURL = window.location.href;
+            delayedGreeting();
+        }
+    }
+}
+
+daemon()*/
