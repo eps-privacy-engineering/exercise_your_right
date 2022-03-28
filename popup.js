@@ -6,6 +6,9 @@ window.onload = function () {
 
 
 	document.getElementById('ccpa-button').onclick = function () {
+		let text0 = localStorage.getItem("testJSON");
+		alert(text0);
+		let obj0 = JSON.parse(text0);
 		chrome.tabs.query(
 			{
 				currentWindow: true,    // currently focused window
@@ -16,19 +19,20 @@ window.onload = function () {
 					var nowPage = foundTabs[0].url;
 					console.log(foundTabs[0])
 					var url = new URL(nowPage)
-					var keyName = 'optOutKey_'+url.hostname
+					var keyName=url.hostname;
+					alert(obj0[keyName]);
 					alert("this key name in popup is "+keyName)
-					chrome.storage.sync.get([keyName], function(result) {
-						alert('Privacy info value currently is ' + result.keyName);
+					chrome.storage.sync.get(['map'], function(result) {
+						alert('Privacy info value currently is ' + result.map[keyName]);
 						// alert('Privacy info value currently is ' + result.optOutKey)
-						if (result.keyName == null){
+						if (result.map[keyName] == null){
 							const para = document.createElement('p');
 							para.innerHTML = "No privacy information available.";
 							document.body.appendChild(para);
 						}
 						else {
 							console.log('test href');
-							window.open(result.keyName, "_blank");
+							window.open(result.map[keyName], "_blank");
 						}
 					});
 				} else {

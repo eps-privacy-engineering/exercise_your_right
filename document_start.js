@@ -15,7 +15,7 @@ function sendhttpPOST(url, parsefunc, req) {
         }
     };
     httpRequest.open('POST', url, true);
-    reqJSON = JSON.stringify(req)
+    var reqJSON = JSON.stringify(req)
     httpRequest.send(reqJSON);
     console.log(httpRequest.responseText)
     return httpRequest.responseText
@@ -79,35 +79,44 @@ function extracttextElements() {
     return elemTextList
 }
 
-//get required information
-function filterResult(result) {
-    var information = {};
-    information["Do Not Sell"] = [];
-    information["CCPA-delete"] = [];
-    information["Opt-out/in"] = [];
-    information["Privacy Policy"] = [];
-    information["CCPA-only"] = [];
-    const text1 = /do not sell|do not share|do not collect/ig
-    const text2 = /CCPA.*delete|delete my information|delete-my-information/ig
-    const text3 = /opt out|opt in|opt-in|opt-out/ig
-    const text4 = /privacy policy|privacy-policy/ig
-    const text5 = /CCPA|California Comsumer Privacy Act/ig
-    //const text5=/data collection/ig
+var info_list = ["Do Not Sell", "delete information", "Opt-out/in", "Privacy Policy", "CCPA-only"];
 
+//get required information
+function filterResult(result){
+    var information=new Object();
+    information["Do Not Sell"]=[];
+    information["delete information"]=[];
+    information["Opt-out/in"]=[];
+    information["Privacy Policy"]=[];
+    information["CCPA-only"]=[];
+    const text1=/do not sell|do not share|do not collect|do-not-sell|do_not_sell|do-not-share|do_not_share|do-not-collect|do_not_collect/ig
+    const text2=/CCPA.*delete|delete my data|delete-my-data|delete_my_data |remove my data|remove-my-data|remove_my_data|remove personal info|remove-personal-info|remove_personal_info|delete my info|delete-my-info|delete_my_info|remove my info|remove-my-info|remove_my_info|remove your info|remove-your-info|remove_your_info/ig
+    const text3=/opt out|opt in|opt-in|opt-out|opt_out|opt_in|optin|optout/ig
+    // const text4=/privacy policy|privacy-policy|privacy-notice|privacy_policy|privacy_notice|privacy notice|privacy.*a>|<.*a.*privacy/ig
+    const text4=/privacy policy|privacy-policy|privacy-notice|privacy_policy|privacy_notice|privacy notice|privacy.*a>|<.*a.*privacy/ig
+    const text5=/CCPA|California Comsumer Privacy Act|Califormia-Consumer-Privacy-Act/ig
+    const text6=/privacy/ig
+    var text_list=[text1,text2,text3,text4,text5,text6];
     var count = result.length;
     for (var i = 0; i < count; i++) {
         var item = result[i];
-        if (typeof item[0] !== "undefined" && (typeof item[2] !== "undefined" || item[1] === 'BUTTON')) {
-            if (item[0].match(text1)) {
-                information["Do Not Sell"].push([item[0], item[1], item[2], item[3]])
-            } else if (item[0].match(text2)) {
-                information["CCPA-delete"].push([item[0], item[1], item[2], item[3]])
-            } else if (item[0].match(text3)) {
-                information["Opt-out/in"].push([item[0], item[1], item[2], item[3]])
-            } else if (item[0].match(text4)) {
-                information["Privacy Policy"].push([item[0], item[1], item[2], item[3]])
-            } else if (item[0].match(text5)) {
-                information["CCPA-only"].push([item[0], item[1], item[2], item[3]])
+        if (typeof item[0] !== "undefined") {
+            var know = false;
+            for (var j = 0; j < 4; j++) {
+                if (item[0].match(text_list[j])) {
+                    information[info_list[j]].push([item[0], item[1], item[2], item[3]]);
+                    know = true;
+                    break;
+                }
+            }
+            if (!know) {
+                if (typeof item[2] !== "undefined") {
+                    if (item[2].match(text6)) {
+                        information["Privacy Policy"].push([item[0], item[1], item[2], item[3]]);
+                    }
+                } else if (item[0].match(text5)) {
+                    information["CCPA-only"].push([item[0], item[1], item[2], item[3]]);
+                }
             }
         }
     }
@@ -116,16 +125,11 @@ function filterResult(result) {
 
 
 function generate_json() {
-    // var host = window.location.host;
-    var attr_list = ["ccpa_do_not_sell", "ccpa_delete", "ccpa_opt_out_in", "ccpa_privacy_policy", "ccpa_copy"];
-    var right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAOpOutIn", "CCPAPrivacyPolicy", "CCPACopy"];
-    var info_list = ["Do Not Sell", "CCPA-delete", "Opt-out/in", "Privacy Policy", "CCPA-only"];
-
     function update(i, key_word_element) {
-        var type = attr_list[i];
+        var type = info_list[i];
         dict_one_host[type]["text"] = key_word_element[0]; // "Delete my data"
         dict_one_host[type]["category"] = key_word_element[1]; // "input"
-        if (key_word_element[1] === "A" | key_word_element[1] === "BUTTON" || key_word_element[1] === "input") {
+        if (key_word_element[1] === "A" || key_word_element[1] === "BUTTON" || key_word_element[1] === "input") {
             dict_one_host[type]["operation_type"] = "click"; // "click"
         } else {
             dict_one_host[type]["operation_type"] = "text"; // todo
@@ -137,68 +141,94 @@ function generate_json() {
     var dict_one_host = {};
     var result = extracttextElements();
     var all_key_word = filterResult(result);
+    console.log("all_key_word~~~\n\n\n\n",all_key_word,"\n\n\n\n");
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < info_list.length; i++) {
         if (all_key_word[info_list[i]].length > 0) {
-            dict_one_host[attr_list[i]] = {};
-            dict_one_host[attr_list[i]]["right_type"] = right_type_list[i];
+            dict_one_host[info_list[i]] = {};
+            dict_one_host[info_list[i]]["right_type"] = info_list[i];
             // for (const key_word_element of all_key_word[info_list[i]]) {
-            key_word_element=all_key_word[info_list[i]][0];
+            var key_word_element=all_key_word[info_list[i]][0];
             update(i, key_word_element);
             //     break;
             // }
         }
     }
-    console.log("~~~\n\n\n\n");
+    console.log("dict_one_host~~~\n\n\n\n",dict_one_host,"\n\n\n\n");
     return dict_one_host;
 }
 
 
 
 
+
 // elemObject: JSON of data gathered from host site (dict_one_host)
-async function useOptOut(JSONDict){
-    await sleep(5000);
-    if(JSONDict["ccpa_do_not_sell"] != undefined){
-        let doNotSellURL = JSONDict["ccpa_do_not_sell"]["url"];
-        return doNotSellURL;
+function useOptOut(JSONDict){
+    //await sleep(5000);
+    //const text=/http/ig
+    if(JSONDict[info_list[0]]!== undefined && JSONDict[info_list[0]]["url"]!== undefined){
+        if (JSONDict[info_list[0]]["url"]!== "o"){
+            let doNotSellURL = JSONDict[info_list[0]]["url"];
+            console.log("doNotSellURL~~~\n\n\n\n",doNotSellURL,"\n\n\n\n");
+            return doNotSellURL;
+        }
     }
-    else if (JSONDict["ccpa_privacy_policy"] != undefined){
-        let privPolURL = JSONDict["ccpa_privacy_policy"]["url"];
-        return privPolURL;
+    else if(JSONDict[info_list[3]]!== undefined && JSONDict[info_list[3]]["url"]!== undefined){
+        if (JSONDict[info_list[3]]["url"]!== "o"){
+            let privPolURL = JSONDict[info_list[3]]["url"];
+            console.log("privPolURL~~~\n\n\n\n",privPolURL,"\n\n\n\n");
+            return privPolURL;
+        }
     }
     else {
         return null;
     }
 }
 
-var thisURL;
+
+
 
 async function delayedGreeting() {
     await sleep(2000);
-    let dict_one_host = generate_json();
-    return useOptOut(dict_one_host);
-
+    // Retrieving data:
+    let text = localStorage.getItem("testJSON");
+    let obj = Object();
+    console.log("start text~~~\n\n\n\n",text,"\n\n\n\n");
+    if (text!==null) {
+        obj = JSON.parse(text);
+    }
+    let hostName = window.location.hostname;
+    if (!("hostName" in obj) || obj["hostName"]===null) {
+        let dict_one_host = generate_json();
+        let url_ = useOptOut(dict_one_host);
+        console.log("in if: url_~~~\n\n\n\n",url_,"\n\n\n\n");
+        obj[hostName]=url_;
+        console.log("in if: map~~~\n\n\n\n",obj,"\n\n\n\n");
+    }
+    console.log("out obj: map~~~\n\n\n\n",obj,"\n\n\n\n");
+    // Storing data:
+    // const myObj = {name: "John", age: 31, city: "New York"};
+    // file=fopen('file.json',0);
+    const myJSON = JSON.stringify(obj);
+    console.log("myJSON~~~\n\n\n\n",myJSON,"\n\n\n\n");
+    localStorage.setItem("testJSON", myJSON);
+    // const FileSystem = require("fs");
+    // FileSystem.writeFile('file.json', JSON.stringify(obj), (error) => {
+    //     if (error) throw error;
+    // });
 }
-delayedGreeting().then(function(result){
-    hostName = window.location.hostname;
-    keyName = "optOutKey_"+hostName
-    console.log("key name is "+keyName)
-    chrome.storage.sync.set({keyName: result}, function() {
-        console.log('stored opt out info is: '+ result, 'to ',keyName);
+
+delayedGreeting().then(function(){
+    let text0 = localStorage.getItem("testJSON");
+    console.log("text0~~~\n\n\n\n",text0,"\n\n\n\n");
+    let obj0 = JSON.parse(text0);
+    // let obj0={};
+    // require('fs').readFile('file.json', (err, data) => {
+    //     console.log(obj0);
+    // })
+    chrome.storage.sync.set({map: obj0}, function() {
+        console.log('stored opt out info is: ');
+        console.log("obj0~~~\n\n\n\n",obj0,"\n\n\n\n");
     })
 });
 
-/*async function daemon(){
-    while(1) {
-        await sleep(1000);
-        console.log("this is ", window.location.href,"dict host is ",generate_json());
-        if(window.location.href!=thisURL){
-            console.log("different! prev is",thisURL);
-            thisURL = window.location.href;
-            delayedGreeting();
-        }
-    }
-}
-
-daemon()*/
