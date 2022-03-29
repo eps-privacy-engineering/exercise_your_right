@@ -1,85 +1,15 @@
-console.log("Hello");
-const script = document.createElement('script');
-script.innerHTML = 'Object.defineProperty(navigator, \'globalPrivacyControl\', {get: () => true, set: (v) => {}});';
-(document.head || document.documentElement).appendChild(script);
-script.parentNode.removeChild(script);
-
-
-function sendhttpPOST(url, parsefunc, req) {
-    var value;
-    var httpRequest = new XMLHttpRequest();
-    httpRequest.onreadystatechange = function () {
-        if (httpRequest.readyState == 4 && httpRequest.status == 200) {
-            var json = httpRequest.responseText;
-            parsefunc(json)
-        }
-    };
-    httpRequest.open('POST', url, true);
-    reqJSON = JSON.stringify(req)
-    httpRequest.send(reqJSON);
-    console.log(httpRequest.responseText)
-    return httpRequest.responseText
-}
-
-
-function httpGet(theUrl)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
-}
-
-
-
-//GPC Checker: currently, I think this should work for any site listed on https://well-known.dev/?q=resource:%22gpc%22#results.
-// https://developer.mozilla.org/en-US/docs/Web/API/Window/location
-// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
-function GPCChecker(){
-    let currentUrl = location.href;
-    console.log(currentUrl);
-    let wellKnownObject = ".well-known/gpc.json";
-    let urlToObject = currentUrl + wellKnownObject;
-    console.log(urlToObject);
-    function reqListener () {
-        if(this.status == 404){
-            console.log("gpc not detected");
-            return;
-        }
-        console.log(this.responseText);
-        let jsonObj = JSON.parse(this.responseText)
-        chrome.storage.sync.set({gpcKey: jsonObj.gpc}, function() {
-            console.log('stored opt out info is: '+ jsonObj.gpc);
-        })
-    }
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.addEventListener("load", reqListener);
-    xmlHttp.open( "GET", urlToObject, false ); // false for synchronous request
-    xmlHttp.send();
-}
-GPCChecker();
-
-
-
-function sleep(ms){
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
-
-// text searching part
-// return1: [String1, String2, ...]
-// return2 dictionary {topic: link}
-function extracttextElements() {
-    var elemTextList = [];
-    var elems = document.getElementsByTagName("*");
-    for (var i = 0; i < elems.length; i++) {
-        elemTextList.push([elems[i].textContent, elems[i].tagName, elems[i].href, elems[i].id])
+function extracttextElements(){
+    var elemTextList=[];
+    var dict = new Object();
+    var  elems=document.getElementsByTagName("*");
+    for(var i=0;i<elems.length;i++){
+    elemTextList.push([elems[i].textContent,elems[i].tagName, elems[i].href, elems[i].id])
     }
     return elemTextList
 }
 
-//get required information
+extracttextElements()
+
 function filterResult(result){
     var information=new Object();
     information["Do Not Sell"]=[];
@@ -131,7 +61,7 @@ function filterResult(result){
     }
     return information
 }
-
+filterResult(extracttextElements())
 
 function generate_json() {
     // var host = window.location.host;
@@ -171,22 +101,21 @@ function generate_json() {
     return dict_one_host;
 }
 
+generate_json()
 
 
-
-
-// elemObject: JSON of data gathered from host site (dict_one_host)
 async function useOptOut(JSONDict){
     //await sleep(5000);
     //const text=/http/ig
-    var result = new Object();
+    var final =[];
     function update_result(category)
     {
+        var result = new Object();
         if (JSONDict[category]!= undefined )
         {
             result[category]=new Object();
             result[category]['url']=[];
-            result[category]['text']=[];
+            //result[category]['text']=[];
             var keys = Object.keys(JSONDict[category]);
             count=keys.length-1
             for (let i = 0; i < count; i++)
@@ -196,52 +125,41 @@ async function useOptOut(JSONDict){
                     result[category]['url'].push(JSONDict[category][i]['url'])
                 }
         
-                if(JSONDict[category][i]['text']!= undefined)
-                {
-                    result[category]['text'].push(JSONDict[category][i]['text'])
-                }
+                //if(JSONDict[category][i]['text']!= undefined)
+                //{
+                    //result[category]['text'].push(JSONDict[category][i]['text'])
+                //}
             }
         }
+        return result
     }
-    update_result("ccpa_do_not_sell")
-    console.log(result)
-    if (result["ccpa_do_not_sell"]){
-        return result;
-    }
-    update_result("ccpa_opt_out_in")
-    console.log(result)
-    if (result["ccpa_opt_out_in"]){
-        return result;
-    }
-    update_result("ccpa_delete")
-    if (result["ccpa_delete"]){
-        return result;
-    }
-    update_result("ccpa_privacy_policy")
-    console.log(result)
-    if (result["ccpa_privacy_policy"]){
-        return result;
-    }
-    console.log(result)
-    update_result("ccpa_copy")
-    if (result["ccpa_copy"]){
-        return result;
+
+    final.push(update_result("ccpa_do_not_sell"))
+    //console.log(result)
+    //if (result["ccpa_do_not_sell"]){
+        //return result;
+    //}
+    final.push(update_result("ccpa_opt_out_in"))
+    //console.log(result)
+    //if (result["ccpa_opt_out_in"]){
+        //return result;
+    //}
+    //update_result("ccpa_delete")
+    //if (result["ccpa_delete"]){
+        //return result;
+    //}
+    //update_result("ccpa_privacy_policy")
+    final.push(update_result("ccpa_delete"))
+    final.push(update_result("ccpa_privacy_policy"))
+    final.push(update_result("ccpa_copy"))
+    //if (result["ccpa_privacy_policy"]){
+        //return result;
+    //}
+    //console.log(result)
+    //update_result("ccpa_copy")
+    if (final){
+        return final;
     }
     return null;
 
 }
-
-
-
-
-async function delayedGreeting() {
-    await sleep(2000);
-    let dict_one_host = generate_json();
-    return useOptOut(dict_one_host);
-
-}
-delayedGreeting().then(function(result){
-    chrome.storage.sync.set({optOutKey: result}, function() {
-        console.log('stored opt out info is: '+ result);
-    })
-});
