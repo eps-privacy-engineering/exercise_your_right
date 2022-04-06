@@ -1,0 +1,50 @@
+{
+	"my.xfinity.com": {
+		"pop_up": {
+			"ccpa_privacy_policy": {
+				"url":"http://www.xfinity.com/privacy/policy",
+				"html_id": null,
+				"text": null
+			},
+			"ccpa_opt_out_in": {
+				"url":"http://www.xfinity.com/privacy/opt-out",
+				"html_id": null,
+				"text": null
+			},
+			"ccpa_copy": {
+				"url":null,
+				"html_id": "a7",
+				"text": null
+			},
+			"ccpa_do_not_sell": {
+				"url":null,
+				"html_id": null,
+				"text": "we don't sell your personal data"
+			},
+			"ccpa_delete": null
+		},
+		"archive": {
+			"ccpa_do_not_sell": {
+				"right_type": "CCPADoNotSell",
+				"exercise_path": [
+					{
+						"text": "",
+						"category": "HTML",
+						"operation_type": "text",
+						"html_id": ""
+					}
+				],
+				"archive_text": [
+					{
+						"text": "\n\n  var SURF_N_PERF ",
+						"category": "HTML",
+						"operation_type": "text",
+						"html_id": ""
+					}
+				]
+			},
+			"ccpa_delete": null,
+			"ccpa_copy": null
+		}
+	}
+}

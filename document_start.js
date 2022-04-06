@@ -30,7 +30,10 @@ function httpGet(theUrl)
     return xmlHttp.responseText;
 }
 
-
+function testParser(respJSON){
+    console.log("test parser")
+    console.log(respJSON)
+}
 
 //GPC Checker: currently, I think this should work for any site listed on https://well-known.dev/?q=resource:%22gpc%22#results.
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/location
@@ -79,13 +82,13 @@ function extracttextElements() {
     return elemTextList
 }
 
-var info_list = ["Do Not Sell", "delete information", "Opt-out/in", "Privacy Policy", "CCPA-only"];
-
+var info_list = ["ccpa_do_not_sell", "ccpa_delete", "Opt-out/in", "Privacy Policy", "CCPA-only"];
+var right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAOpOutIn", "CCPAPrivacyPolicy", "CCPACopy"];
 //get required information
 function filterResult(result){
     var information=new Object();
-    information["Do Not Sell"]=[];
-    information["delete information"]=[];
+    information["ccpa_do_not_sell"]=[];
+    information["ccpa_delete"]=[];
     information["Opt-out/in"]=[];
     information["Privacy Policy"]=[];
     information["CCPA-only"]=[];
@@ -104,7 +107,7 @@ function filterResult(result){
             var know = false;
             for (var j = 0; j < 4; j++) {
                 if (item[0].match(text_list[j])) {
-                    information[info_list[j]].push([item[0], item[1], item[2], item[3]]);
+                    information[info_list[j]].push([item[0].slice(0,10), item[1], item[2], item[3]]);
                     know = true;
                     break;
                 }
@@ -112,10 +115,10 @@ function filterResult(result){
             if (!know) {
                 if (typeof item[2] !== "undefined") {
                     if (item[2].match(text6)) {
-                        information["Privacy Policy"].push([item[0], item[1], item[2], item[3]]);
+                        information["Privacy Policy"].push([item[0].slice(0,10), item[1], item[2], item[3]]);
                     }
                 } else if (item[0].match(text5)) {
-                    information["CCPA-only"].push([item[0], item[1], item[2], item[3]]);
+                    information["CCPA-only"].push([item[0].slice(0,10), item[1], item[2], item[3]]);
                 }
             }
         }
@@ -126,16 +129,28 @@ function filterResult(result){
 
 function generate_json() {
     function update(i, key_word_element) {
-        var type = info_list[i];
-        dict_one_host[type]["text"] = key_word_element[0]; // "Delete my data"
-        dict_one_host[type]["category"] = key_word_element[1]; // "input"
+//        var type = info_list[i];
+//        dict_one_host[type]["text"] = key_word_element[0]; // "Delete my data"
+//        dict_one_host[type]["category"] = key_word_element[1]; // "input"
+//        if (key_word_element[1] === "A" || key_word_element[1] === "BUTTON" || key_word_element[1] === "input") {
+//            dict_one_host[type]["operation_type"] = "click"; // "click"
+//        } else {
+//            dict_one_host[type]["operation_type"] = "text"; // todo
+//        }
+//        dict_one_host[type]["url"] = key_word_element[2];
+//        dict_one_host[type]["html_id"] = key_word_element[3];
+
+        node1 = new Object()
+        node1.text = key_word_element[0]
+        node1.category = key_word_element[1]
         if (key_word_element[1] === "A" || key_word_element[1] === "BUTTON" || key_word_element[1] === "input") {
-            dict_one_host[type]["operation_type"] = "click"; // "click"
+           node1.operation_type = "click"// "click"
         } else {
-            dict_one_host[type]["operation_type"] = "text"; // todo
+            node1.operation_type = "text"; // todo
         }
-        dict_one_host[type]["url"] = key_word_element[2];
-        dict_one_host[type]["html_id"] = key_word_element[3];
+        node1.url = key_word_element[2];
+        node1.html_id = key_word_element[3];
+        return node1;
     }
 
     var dict_one_host = {};
@@ -146,10 +161,12 @@ function generate_json() {
     for (let i = 0; i < info_list.length; i++) {
         if (all_key_word[info_list[i]].length > 0) {
             dict_one_host[info_list[i]] = {};
-            dict_one_host[info_list[i]]["right_type"] = info_list[i];
+            dict_one_host[info_list[i]]["right_type"] = right_type_list[i];
             // for (const key_word_element of all_key_word[info_list[i]]) {
             var key_word_element=all_key_word[info_list[i]][0];
-            update(i, key_word_element);
+            var node1 = update(i, key_word_element);
+            dict_one_host[info_list[i]].exercise_path = new Array()
+            dict_one_host[info_list[i]].exercise_path.push(node1);
             //     break;
             // }
         }
@@ -159,23 +176,33 @@ function generate_json() {
 }
 
 
-
+//detail = new Object()
+//detail.right_type = "CCPADelete"
+//detail.exercise_path = new Array()
+//node1 = new Object()
+//node1.text = "Privacy Policies"
+//node1.category = "input"
+//node1.operation_type = "click"
+//node1.html_id = "a7"
+//detail.exercise_path.push(node1)
+//
+//console.log("detail",detail)
 
 
 // elemObject: JSON of data gathered from host site (dict_one_host)
 function useOptOut(JSONDict){
     //await sleep(5000);
     //const text=/http/ig
-    if(JSONDict[info_list[0]]!== undefined && JSONDict[info_list[0]]["url"]!== undefined){
-        if (JSONDict[info_list[0]]["url"]!== "o"){
-            let doNotSellURL = JSONDict[info_list[0]]["url"];
+    if(JSONDict[info_list[0]]!== undefined && JSONDict[info_list[0]].exercise_path[0]["url"]!== undefined){
+        if (JSONDict[info_list[0]].exercise_path[0]["url"]!== "o"){
+            let doNotSellURL = JSONDict[info_list[0]].exercise_path[0]["url"];
             console.log("doNotSellURL~~~\n\n\n\n",doNotSellURL,"\n\n\n\n");
             return doNotSellURL;
         }
     }
-    else if(JSONDict[info_list[3]]!== undefined && JSONDict[info_list[3]]["url"]!== undefined){
-        if (JSONDict[info_list[3]]["url"]!== "o"){
-            let privPolURL = JSONDict[info_list[3]]["url"];
+    else if(JSONDict[info_list[3]]!== undefined && JSONDict[info_list[3]].exercise_path[0]["url"]!== undefined){
+        if (JSONDict[info_list[3]].exercise_path[0]["url"]!== "o"){
+            let privPolURL = JSONDict[info_list[3]].exercise_path[0]["url"];
             console.log("privPolURL~~~\n\n\n\n",privPolURL,"\n\n\n\n");
             return privPolURL;
         }
@@ -187,48 +214,76 @@ function useOptOut(JSONDict){
 
 
 
+function get_and_update(respJSON){
+    console.log("get_and_update")
+    console.log(respJSON)
+    let obj = new Object();
+    obj = JSON.parse(respJSON);
+    console.log("respJSON.ccpa",respJSON.ccpa);
 
+    console.log("1",respJSON.ccpa)
+    console.log("2",obj.ccpa)
+    console.log("3",obj["ccpa"])
+    console.log("3", (respJSON.ccpa === undefined))
+    if (respJSON.ccpa === undefined) {
+        let dict_one_host = generate_json();
+
+        for ([key, value] of Object.entries(dict_one_host)) {
+            console.log(key, value);
+
+            req_update = new Object()
+            req_update.host = window.location.hostname;
+            req_update.exercise_detail=value;
+            console.log("value",value);
+            sendhttpPOST("http://127.0.0.1:8080/update_website_attr",testParser,req_update)
+         }
+    }
+    else {
+        console.log("respJSON.ccpa!==null");
+    }
+    console.log("get_and_update end")
+
+    req_get = new Object()
+    req_get.host=window.location.hostname;
+    console.log("delayedGreeting.then() before sendhttpPOST");
+    sendhttpPOST("http://127.0.0.1:8080/get_website_attr",get_url,req_get);
+    console.log("delayedGreeting.then() after sendhttpPOST");
+}
 async function delayedGreeting() {
     await sleep(2000);
     // Retrieving data:
-    let text = localStorage.getItem("testJSON");
-    let obj = Object();
-    console.log("start text~~~\n\n\n\n",text,"\n\n\n\n");
-    if (text!==null) {
-        obj = JSON.parse(text);
-    }
-    let hostName = window.location.hostname;
-    if (!("hostName" in obj) || obj["hostName"]===null) {
-        let dict_one_host = generate_json();
-        let url_ = useOptOut(dict_one_host);
-        console.log("in if: url_~~~\n\n\n\n",url_,"\n\n\n\n");
-        obj[hostName]=url_;
-        console.log("in if: map~~~\n\n\n\n",obj,"\n\n\n\n");
-    }
-    console.log("out obj: map~~~\n\n\n\n",obj,"\n\n\n\n");
-    // Storing data:
-    // const myObj = {name: "John", age: 31, city: "New York"};
-    // file=fopen('file.json',0);
-    const myJSON = JSON.stringify(obj);
-    console.log("myJSON~~~\n\n\n\n",myJSON,"\n\n\n\n");
-    localStorage.setItem("testJSON", myJSON);
-    // const FileSystem = require("fs");
-    // FileSystem.writeFile('file.json', JSON.stringify(obj), (error) => {
-    //     if (error) throw error;
-    // });
+    req_get = new Object()
+    req_get.host=window.location.hostname;
+    console.log("delayedGreeting before sendhttpPOST");
+    sendhttpPOST("http://127.0.0.1:8080/get_website_attr",get_and_update,req_get);
+    console.log("delayedGreeting after sendhttpPOST");
 }
 
+async function get_url(respJSON){
+    console.log("get_url")
+    console.log(respJSON)
+    let obj = new Object();
+    obj = JSON.parse(respJSON);
+
+    console.log("1",respJSON.ccpa)
+    console.log("2",obj.ccpa)
+    console.log("3",obj["ccpa"])
+    console.log("3", (respJSON.ccpa === undefined))
+    if (obj.ccpa)  {
+        console.log("@@respJSON.ccpa",obj.ccpa)
+        let url_ = useOptOut(obj.ccpa);
+//        console.log("in if: url_~~~\n\n\n\n",url_,"\n\n\n\n");
+        chrome.storage.sync.set({url: url_}, function() {
+            console.log('stored opt out info is: ');
+            console.log("obj0~~~\n\n\n\n",url_,"\n\n\n\n");
+        })
+    } else {
+        console.log("something wrong!");
+    }
+
+    console.log("get_url end")
+}
 delayedGreeting().then(function(){
-    let text0 = localStorage.getItem("testJSON");
-    console.log("text0~~~\n\n\n\n",text0,"\n\n\n\n");
-    let obj0 = JSON.parse(text0);
-    // let obj0={};
-    // require('fs').readFile('file.json', (err, data) => {
-    //     console.log(obj0);
-    // })
-    chrome.storage.sync.set({map: obj0}, function() {
-        console.log('stored opt out info is: ');
-        console.log("obj0~~~\n\n\n\n",obj0,"\n\n\n\n");
-    })
+
 });
 
