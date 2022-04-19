@@ -95,37 +95,47 @@ function filterResult(result){
     const text1=/do not sell|do not share|do not collect|do-not-sell|do_not_sell|do-not-share|do_not_share|do-not-collect|do_not_collect/ig
     const text2=/CCPA.*delete|delete my data|delete-my-data|delete_my_data |remove my data|remove-my-data|remove_my_data|remove personal info|remove-personal-info|remove_personal_info|delete my info|delete-my-info|delete_my_info|remove my info|remove-my-info|remove_my_info|remove your info|remove-your-info|remove_your_info/ig
     const text3=/opt out|opt in|opt-in|opt-out|opt_out|opt_in|optin|optout/ig
-    // const text4=/privacy policy|privacy-policy|privacy-notice|privacy_policy|privacy_notice|privacy notice|privacy.*a>|<.*a.*privacy/ig
     const text4=/privacy policy|privacy-policy|privacy-notice|privacy_policy|privacy_notice|privacy notice|privacy.*a>|<.*a.*privacy/ig
     const text5=/CCPA|California Comsumer Privacy Act|Califormia-Consumer-Privacy-Act/ig
     const text6=/privacy/ig
-    var text_list=[text1,text2,text3,text4,text5,text6];
+
     var count = result.length;
-    for (var i = 0; i < count; i++) {
+    for(var i = 0; i < count; i++) {
         var item = result[i];
-        if (typeof item[0] !== "undefined") {
-            var know = false;
-            for (var j = 0; j < 4; j++) {
-                if (item[0].match(text_list[j])) {
-                    information[info_list[j]].push([item[0].slice(0,10), item[1], item[2], item[3]]);
-                    know = true;
-                    break;
+        if (typeof item[0] !== "undefined")
+        {
+
+          if (item[0].match(text1))
+            {
+                information["Do Not Sell"].push( [item[1], item[2], item[3],item[0]])
+            }
+          else if (item[0].match(text2))
+            {
+                information["delete information"].push([item[1], item[2], item[3],item[0]])
+            }
+          else if (item[0].match(text3))
+            {
+                information["Opt-out/in"].push([item[1], item[2], item[3],item[0]])
+            }
+          else if (item[0].match(text4))
+            {
+                information["Privacy Policy"].push([item[1], item[2], item[3],item[0]])
+            }
+          else if (typeof item[2] !== "undefined")
+            {
+              if (item[2].match(text6))
+                {
+                information["Privacy Policy"].push([item[1], item[2], item[3],item[0]])
                 }
             }
-            if (!know) {
-                if (typeof item[2] !== "undefined") {
-                    if (item[2].match(text6)) {
-                        information["Privacy Policy"].push([item[0].slice(0,10), item[1], item[2], item[3]]);
-                    }
-                } else if (item[0].match(text5)) {
-                    information["CCPA-only"].push([item[0].slice(0,10), item[1], item[2], item[3]]);
-                }
+          else if (item[0].match(text5))
+            {
+                information["CCPA-only"].push([item[1], item[2], item[3],item[0]])
             }
-        }
+     }
     }
     return information
 }
-
 
 function generate_json() {
     function update(i, key_word_element) {
@@ -145,9 +155,10 @@ function generate_json() {
         node1.category = key_word_element[1]
         if (key_word_element[1] === "A" || key_word_element[1] === "BUTTON" || key_word_element[1] === "input") {
            node1.operation_type = "click"// "click"
-        } else {
-            node1.operation_type = "text"; // todo
         }
+//        else {
+//            node1.operation_type = "text"; // todo
+//        }
         node1.url = key_word_element[2];
         node1.html_id = key_word_element[3];
         return node1;
@@ -165,12 +176,18 @@ function generate_json() {
             // for (const key_word_element of all_key_word[info_list[i]]) {
             var key_word_element=all_key_word[info_list[i]][0];
             var node1 = update(i, key_word_element);
-            dict_one_host[info_list[i]].exercise_path = new Array()
-            dict_one_host[info_list[i]].exercise_path.push(node1);
-            //     break;
-            // }
+            if (node1.operation_type == "click"){
+                dict_one_host[info_list[i]].exercise_path = new Array()
+                dict_one_host[info_list[i]].exercise_path.push(node1);
+                 break;
+            }
         }
     }
+//    if (node1.operation_type == "click"){
+//                dict_one_host[info_list[i]].exercise_path = new Array()
+//                dict_one_host[info_list[i]].exercise_path.push(node1);
+//                 break;
+//             }
     console.log("dict_one_host~~~\n\n\n\n",dict_one_host,"\n\n\n\n");
     return dict_one_host;
 }
@@ -227,10 +244,8 @@ function get_and_update(respJSON){
     console.log("3", (respJSON.ccpa === undefined))
     if (respJSON.ccpa === undefined) {
         let dict_one_host = generate_json();
-
         for ([key, value] of Object.entries(dict_one_host)) {
             console.log(key, value);
-
             req_update = new Object()
             req_update.host = window.location.hostname;
             req_update.exercise_detail=value;
@@ -255,7 +270,7 @@ async function delayedGreeting() {
     req_get = new Object()
     req_get.host=window.location.hostname;
     console.log("delayedGreeting before sendhttpPOST");
-    sendhttpPOST("http://127.0.0.1:8080/get_website_attr",get_and_update,req_get);
+    sendhttpPOST("http://127.0.0.1:8080/get_website_attr",get_and_update,req_get); // todo 1.13.20.181
     console.log("delayedGreeting after sendhttpPOST");
 }
 
