@@ -101,7 +101,7 @@ function filterResult(result) {
     const text6 = /privacy/ig
 
     var count = result.length;
-    for (var i = 0; i < count; i++) {
+    for(var i = 0; i < count; i++) {
         var item = result[i];
         if (typeof item[0] !== "undefined") {
 
@@ -121,7 +121,45 @@ function filterResult(result) {
             } else if (item[0].match(text5)) {
                 information["CCPA-only"].push([item[1], item[2], item[3], item[0]])
             }
-        }
+          else if (item[0].match(text2))
+            {
+                information["delete information"].push([item[1], item[2], item[3]])
+            }
+          else if (item[0].match(text3))
+            {
+                information["Opt-out/in"].push([item[1], item[2], item[3]])
+            }
+          else if (item[0].match(text4))
+            {
+                information["Privacy Policy"].push([item[1], item[2], item[3]])
+            }
+          else if (typeof item[2] !== "undefined")
+            {
+              if (item[2].match(text6))
+                {
+                information["Privacy Policy"].push([item[1], item[2], item[3]])
+                }
+            }
+          else if (item[0].match(text5))
+            {
+                information["CCPA-only"].push([item[1], item[2], item[3]])
+            }  
+     }
+    }
+    if (information["Do Not Sell"].length===0){
+        information["Do Not Sell"].push("No Do Not Sell mentioned")
+    }
+    if (information["delete information"].length===0){
+        information["delete information"].push("No CCPA delete my information mentioned ")
+    }
+    if (information["Opt-out/in"].length===0){
+        information["Opt-out/in"].push("No opt out/in mentioned")
+    }
+    if (information["Privacy Policy"].length===0){
+        information["Privacy Policy"].push("No privacy policy")
+    }
+    if (information["CCPA-only"].length===0){
+        information["CCPA-only"].push("No CCPA mentioned")
     }
     return information
 }
@@ -146,6 +184,7 @@ function generate_json() {
         node1.html_id = id
         return node1;
     }
+
 
     var dict_one_host = {};
     var result = extracttextElements();
@@ -194,6 +233,7 @@ function generate_json() {
 //detail.exercise_path.push(node1)
 //
 //console.log("detail",detail)
+
 
 
 // elemObject: JSON of data gathered from host site (dict_one_host)
@@ -270,6 +310,7 @@ function get_and_update(respJSON) {
     sendhttpPOST("http://127.0.0.1:80/get_website_attr", get_url, req_get);
     console.log("delayedGreeting.then() after sendhttpPOST");
 }
+
 
 async function delayedGreeting() {
     await sleep(2000);
