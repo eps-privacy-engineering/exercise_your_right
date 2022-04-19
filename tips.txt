@@ -1,0 +1,9 @@
+用户有finish按钮
+2人同时访问链
+循环，遍历之前的path，看有没有相同，若有就give up，就停了。做个标记，表示这个attribute弄好了
+// google/map ～ google -> google/policy
+// 若path没有，就 当作 主页 root / root -》next
+// google->A->B->C
+// 现在是A, A,B的数据传到db上的，但C只有按按钮去B的时刻看到。
+// 到C time, 发现没有click，就停了。做个标记，表示这个attribute弄好了
+// google/map,
