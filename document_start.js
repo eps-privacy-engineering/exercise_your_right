@@ -286,6 +286,9 @@ function exist(obj) {
         var infoname = info_list[i];
         console.log("pathvec "+info_list[i]+" " + obj.ccpa.infoname);
         var right_obj = obj.ccpa.infoname;
+        if(right_obj==undefined){
+            continue;
+        }
         var path_vec = obj.ccpa.infoname.exercise_path;
         var lastNode = path_vec[path_vec.length - 1];
         if (lastNode) {
