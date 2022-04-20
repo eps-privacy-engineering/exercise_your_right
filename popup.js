@@ -22,17 +22,17 @@ window.onload = function () {
 					var keyName=url.hostname;
 					alert(obj0[keyName]);
 					alert("this key name in popup is "+keyName)
-					chrome.storage.sync.get(['url'], function(result) {
-						alert('Privacy info value currently is ' + result.url);
+					chrome.storage.sync.get(['url_dict'], function(result) {
+						alert('Privacy info value currently is ' + result.url_dict);
 						// alert('Privacy info value currently is ' + result.optOutKey)
-						if (result.url == null){
+						if (result.url_dict == null){
 							const para = document.createElement('p');
 							para.innerHTML = "No privacy information available.";
 							document.body.appendChild(para);
 						}
 						else {
 							console.log('test href');
-							window.open(result.url, "_blank");
+							window.open(result.url_dict, "_blank");
 						}
 					});
 				} else {
