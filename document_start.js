@@ -101,12 +101,11 @@ function filterResult(result) {
     const text6 = /privacy/ig
 
     var count = result.length;
-    for(var i = 0; i < count; i++) {
+    for (var i = 0; i < count; i++) {
         var item = result[i];
         if (typeof item[0] !== "undefined") {
-
+            // elemTextList.push([elems[i].textContent, elems[i].tagName, elems[i].href, elems[i].id])
             if (item[0].match(text1)) {
-//            elemTextList.push([elems[i].textContent, elems[i].tagName, elems[i].href, elems[i].id])
                 information["ccpa_do_not_sell"].push([item[1], item[2], item[3], item[0]])
             } else if (item[0].match(text2)) {
                 information["ccpa_delete"].push([item[1], item[2], item[3], item[0]])
@@ -121,50 +120,25 @@ function filterResult(result) {
             } else if (item[0].match(text5)) {
                 information["CCPA-only"].push([item[1], item[2], item[3], item[0]])
             }
-          else if (item[0].match(text2))
-            {
-                information["delete information"].push([item[1], item[2], item[3]])
-            }
-          else if (item[0].match(text3))
-            {
-                information["Opt-out/in"].push([item[1], item[2], item[3]])
-            }
-          else if (item[0].match(text4))
-            {
-                information["Privacy Policy"].push([item[1], item[2], item[3]])
-            }
-          else if (typeof item[2] !== "undefined")
-            {
-              if (item[2].match(text6))
-                {
-                information["Privacy Policy"].push([item[1], item[2], item[3]])
-                }
-            }
-          else if (item[0].match(text5))
-            {
-                information["CCPA-only"].push([item[1], item[2], item[3]])
-            }  
-     }
-    }
-    if (information["Do Not Sell"].length===0){
-        information["Do Not Sell"].push("No Do Not Sell mentioned")
-    }
-    if (information["delete information"].length===0){
-        information["delete information"].push("No CCPA delete my information mentioned ")
-    }
-    if (information["Opt-out/in"].length===0){
-        information["Opt-out/in"].push("No opt out/in mentioned")
-    }
-    if (information["Privacy Policy"].length===0){
-        information["Privacy Policy"].push("No privacy policy")
-    }
-    if (information["CCPA-only"].length===0){
-        information["CCPA-only"].push("No CCPA mentioned")
+        }
     }
     return information
 }
 
-function generate_json() {
+function generate_json(obj, create_new, all_key_word) {
+    for (let i = 0; i < info_list.length; i++) {
+        if (all_key_word[info_list[i]].length > 0) {
+            generate_json_attribure(i, obj, create_new, all_key_word)
+        }
+    }
+}
+
+// bool create_new,
+// if yes, I would create a new dict to let database replace the current one
+// if no,
+//     if obj.ccpa.attr exists, then extend a node in exercise_path
+//     else create new
+function generate_json_attribure(i, obj, create_new, all_key_word) {
     function update(i, key_word_element) {
         node1 = new Object()
         var tagname = key_word_element[0]
@@ -178,62 +152,63 @@ function generate_json() {
         }
         console.log("222");
         var text = key_word_element[3]
-        node1.page = href
+        node1.page = window.location.hostname + window.location.pathname
         node1.text = text
         node1.category = tagname
-        node1.html_id = id
+        if (href) {
+            node1.html_id = href
+        } else {
+            node1.html_id = id
+        }
         return node1;
     }
 
-
-    var dict_one_host = {};
-    var result = extracttextElements();
-    var all_key_word = filterResult(result);
-    console.log("all_key_word~~~\n\n\n\n", all_key_word, "\n\n\n\n");
-
-    for (let i = 0; i < info_list.length; i++) {
-        if (all_key_word[info_list[i]].length > 0) {
-            console.log(right_type_list[i], "111");
-            var node1;
-            for (const key_word_element of all_key_word[info_list[i]]) {
-//            var key_word_element=all_key_word[info_list[i]][0];
-                node1 = update(i, key_word_element);
-                if (node1.operation_type && node1.operation_type === "click") {
-                    break;
-                }
-            }
-
-            if (node1.operation_type && node1.operation_type === "click") {
-                console.log(info_list[i], "is click");
-                if (dict_one_host[info_list[i]] == null) {
-                    dict_one_host[info_list[i]] = {};
-                    dict_one_host[info_list[i]]["right_type"] = right_type_list[i];
-                }
-                if (dict_one_host[info_list[i]]["exercise_path"] == null) {
-                    dict_one_host[info_list[i]]["exercise_path"] = new Array();
-                }
-                dict_one_host[info_list[i]]["exercise_path"].push(node1);
-            }
-
+    console.log(right_type_list[i], "111");
+    var node1;
+    attr = info_list[i];
+    for (const key_word_element of all_key_word[attr]) {
+        // var key_word_element=all_key_word[attr][0];
+        node1 = update(i, key_word_element);
+        if (node1.operation_type && node1.operation_type === "click") {
+            break;
         }
     }
-    console.log("dict_one_host~~~\n\n\n\n", dict_one_host, "\n\n\n\n");
-    return dict_one_host;
+
+    if (node1 && node1.operation_type && node1.operation_type === "click") {
+        console.log(attr, "is click");
+
+        dict = {};
+        dict["right_type"] = right_type_list[i];
+        console.log("create_new:", create_new);
+        console.log("obj.ccpa :", obj.ccpa);
+        console.log("judge :", (!create_new && obj.ccpa && obj.ccpa[attr]));
+        console.log("judge :", (!create_new && obj.ccpa));
+        console.log("judge :", (obj.ccpa && obj.ccpa[attr]));
+        if (!create_new && obj.ccpa && obj.ccpa[attr]) {
+            dict = obj.ccpa[attr];
+            console.log("just extend, previous dict:", dict);
+        }
+        // if (obj.ccpa && obj.ccpa.attr) {
+        //     dict = obj.ccpa.attr;
+        //     console.log("just extend, previous dict:", dict);
+        // }
+        // if (create_new){
+        //     dict = {};
+        // }
+
+        if (dict["exercise_path"] == null) {
+            console.log("create new path", dict);
+            dict["exercise_path"] = new Array();
+        }
+        dict["exercise_path"].push(node1);
+
+        req_update = new Object()
+        req_update.host = window.location.hostname;
+        req_update.exercise_detail = dict;
+        console.log("dict", dict);
+        sendhttpPOST("http://127.0.0.1:80/update_website_attr", testParser, req_update)
+    }
 }
-
-
-//detail = new Object()
-//detail.right_type = "CCPADelete"
-//detail.exercise_path = new Array()
-//node1 = new Object()
-//node1.text = "Privacy Policies"
-//node1.category = "input"
-//node1.operation_type = "click"
-//node1.html_id = "a7"
-//detail.exercise_path.push(node1)
-//
-//console.log("detail",detail)
-
 
 
 // elemObject: JSON of data gathered from host site (dict_one_host)
@@ -256,7 +231,6 @@ function useOptOut(JSONDict) {
         return null;
     }
 }
-
 
 // TODO @Joy:
 // arr[i]==-1 locked
@@ -301,28 +275,24 @@ function exist(obj) {
     return arr;
 }
 
-
 function get_and_update(respJSON) {
     console.log("get_and_update")
     console.log(respJSON)
     let obj = new Object();
     obj = JSON.parse(respJSON);
-    console.log("respJSON.ccpa", obj.ccpa);
+    console.log("### just get obj.ccpa", obj.ccpa);
 
     console.log("3", (obj.ccpa === undefined))
+
+    var result = extracttextElements();
+    var all_key_word = filterResult(result);
+    console.log("all_key_word~~~\n\n\n\n", all_key_word, "\n\n\n\n");
+
     if (obj.ccpa === null) {
-        let dict_one_host = generate_json();
-        for ([key, value] of Object.entries(dict_one_host)) {
-            console.log(key, value);
-            req_update = new Object()
-            req_update.host = window.location.hostname;
-            req_update.exercise_detail = value;
-            console.log("value", value);
-            sendhttpPOST("http://127.0.0.1:80/update_website_attr", testParser, req_update)
-        }
+        generate_json(obj, 1, all_key_word);
     } else {
         console.log("obj.ccpa!==null");
-        exist(obj); //  todo return url to @jack
+        exist(obj, all_key_word); //  todo return url to @jack
     }
     console.log("get_and_update end")
 
@@ -332,7 +302,6 @@ function get_and_update(respJSON) {
     sendhttpPOST("http://127.0.0.1:80/get_website_attr", get_url, req_get);
     console.log("delayedGreeting.then() after sendhttpPOST");
 }
-
 
 async function delayedGreeting() {
     await sleep(2000);
@@ -358,7 +327,7 @@ async function get_url(respJSON) {
     if (obj.ccpa) {
         console.log("@@respJSON.ccpa", obj.ccpa)
         let url_ = useOptOut(obj.ccpa);
-//        console.log("in if: url_~~~\n\n\n\n",url_,"\n\n\n\n");
+        // console.log("in if: url_~~~\n\n\n\n",url_,"\n\n\n\n");
         chrome.storage.sync.set({url: url_}, function () {
             console.log('stored opt out info is: ');
             console.log("obj0~~~\n\n\n\n", url_, "\n\n\n\n");
