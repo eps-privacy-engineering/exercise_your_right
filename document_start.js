@@ -287,19 +287,21 @@ function exist_notes(obj, all_key_word) {
 // arr[i] == 1 not the last, follow the list
 // arr[i]==2 hard fork, overwrite
 function exist(obj) {
+    console.log("obj is ",obj);
     var arr = new Array(info_list.length)
     for (let i = 0; i < info_list.length; i++) {
         arr[i] = 2;
         var infoname = info_list[i];
-        console.log("pathvec " + info_list[i] + " " + obj.ccpa.infoname);
-        var right_obj = obj.ccpa.infoname;
-        if (right_obj === undefined) {
+        console.log("pathvec " + info_list[i] + " " + obj.ccpa[infoname]);
+        var right_obj = obj.ccpa[infoname];
+        if (right_obj === undefined || right_obj==null) {
             continue;
         }
-        var path_vec = obj.ccpa.infoname.exercise_path;
+        var path_vec = obj.ccpa[infoname].exercise_path;
+        console.log("path_vec is ",path_vec)
         var lastNode = path_vec[path_vec.length - 1];
         if (lastNode) {
-            console.log("node: ", node.page);
+            console.log("node: ", lastNode.page);
         } else {
             console.log("no node");
         }
