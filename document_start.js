@@ -121,45 +121,7 @@ function filterResult(result) {
             } else if (item[0].match(text5)) {
                 information["CCPA-only"].push([item[1], item[2], item[3], item[0]])
             }
-          else if (item[0].match(text2))
-            {
-                information["delete information"].push([item[1], item[2], item[3]])
-            }
-          else if (item[0].match(text3))
-            {
-                information["Opt-out/in"].push([item[1], item[2], item[3]])
-            }
-          else if (item[0].match(text4))
-            {
-                information["Privacy Policy"].push([item[1], item[2], item[3]])
-            }
-          else if (typeof item[2] !== "undefined")
-            {
-              if (item[2].match(text6))
-                {
-                information["Privacy Policy"].push([item[1], item[2], item[3]])
-                }
-            }
-          else if (item[0].match(text5))
-            {
-                information["CCPA-only"].push([item[1], item[2], item[3]])
-            }  
-     }
-    }
-    if (information["Do Not Sell"].length===0){
-        information["Do Not Sell"].push("No Do Not Sell mentioned")
-    }
-    if (information["delete information"].length===0){
-        information["delete information"].push("No CCPA delete my information mentioned ")
-    }
-    if (information["Opt-out/in"].length===0){
-        information["Opt-out/in"].push("No opt out/in mentioned")
-    }
-    if (information["Privacy Policy"].length===0){
-        information["Privacy Policy"].push("No privacy policy")
-    }
-    if (information["CCPA-only"].length===0){
-        information["CCPA-only"].push("No CCPA mentioned")
+        }
     }
     return information
 }
