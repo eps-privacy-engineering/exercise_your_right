@@ -6,10 +6,10 @@ script.parentNode.removeChild(script);
 
 
 function sendhttpPOST(url, parsefunc, req) {
-    var value;
+    // var value;
     var httpRequest = new XMLHttpRequest();
     httpRequest.onreadystatechange = function () {
-        if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+        if (httpRequest.readyState === 4 && httpRequest.status === 200) {
             var json = httpRequest.responseText;
             parsefunc(json)
         }
@@ -45,7 +45,7 @@ function GPCChecker() {
     console.log(urlToObject);
 
     function reqListener() {
-        if (this.status == 404) {
+        if (this.status === 404) {
             console.log("gpc not detected");
             return;
         }
@@ -114,8 +114,11 @@ function filterResult(result) {
             } else if (item[0].match(text4)) {
                 information["Privacy Policy"].push([item[1], item[2], item[3], item[0]])
             } else if (typeof item[2] !== "undefined") {
-                if (item[2].match(text6)) {
-                    information["Privacy Policy"].push([item[1], item[2], item[3], item[0]])
+                if (item[1] !== "use") {
+                    console.log("item[2]:", item[2]);
+                    if (item[2].match(text6)) {
+                        information["Privacy Policy"].push([item[1], item[2], item[3], item[0]])
+                    }
                 }
             } else if (item[0].match(text5)) {
                 information["CCPA-only"].push([item[1], item[2], item[3], item[0]])
@@ -236,42 +239,46 @@ function exist_prev_version(obj, all_key_word) {
     var arr = exist(obj);
     console.log("arr: ", arr);
     for (let i = 0; i < info_list.length; i++) {
-        console.log("info - arr: ", info_list[i],arr[i]);
-        if (arr[i] === -1 || arr[i] === 1){}
-        else if (arr[i] === 0){generate_json_attribure(i, obj, 0, all_key_word);}
-        else if (arr[i] === 2){generate_json_attribure(i, obj, 1, all_key_word);}
+        console.log("info - arr: ", info_list[i], arr[i]);
+        if (arr[i] === -1 || arr[i] === 1) {
+        } else if (arr[i] === 0) {
+            generate_json_attribure(i, obj, 0, all_key_word);
+        } else if (arr[i] === 2) {
+            generate_json_attribure(i, obj, 1, all_key_word);
+        }
     }
 }
+
 function exist_notes(obj, all_key_word) {
-        // // if node already in the path
-        // var current_url = window.location.hostname + window.location.pathname
-        // for (const node of dict["exercise_path"]) {
-        //     if (current_url===node.page){
-        //         return;
-        //     }
-        // }
-        // var path_vec = obj.ccpa.ccpa_do_not_sell.exercise_path;
-        // var node = path_vec[path_vec.length - 1];
-        // if (node) {
-        //     console.log("node: ", node.page);
-        // } else {
-        //     console.log("no node");
-        // }
-        // // 判断有没有锁
-        //
-        // // var current_url = ;
-        //
-        // // whether current_url is in the path
-        // var in_path = true;
-        //
-        //
-        // if (in_path) {
-        //     // if there is current_url->next
-        //     // if yes, do nothing; just return
-        //     // if no, update
-        // } else {
-        //     // create
-        // }
+    // // if node already in the path
+    // var current_url = window.location.hostname + window.location.pathname
+    // for (const node of dict["exercise_path"]) {
+    //     if (current_url===node.page){
+    //         return;
+    //     }
+    // }
+    // var path_vec = obj.ccpa.ccpa_do_not_sell.exercise_path;
+    // var node = path_vec[path_vec.length - 1];
+    // if (node) {
+    //     console.log("node: ", node.page);
+    // } else {
+    //     console.log("no node");
+    // }
+    // // 判断有没有锁
+    //
+    // // var current_url = ;
+    //
+    // // whether current_url is in the path
+    // var in_path = true;
+    //
+    //
+    // if (in_path) {
+    //     // if there is current_url->next
+    //     // if yes, do nothing; just return
+    //     // if no, update
+    // } else {
+    //     // create
+    // }
 }
 
 // TODO @Joy:
@@ -282,11 +289,11 @@ function exist_notes(obj, all_key_word) {
 function exist(obj) {
     var arr = new Array(info_list.length)
     for (let i = 0; i < info_list.length; i++) {
-        arr[i]=2;
+        arr[i] = 2;
         var infoname = info_list[i];
-        console.log("pathvec "+info_list[i]+" " + obj.ccpa.infoname);
+        console.log("pathvec " + info_list[i] + " " + obj.ccpa.infoname);
         var right_obj = obj.ccpa.infoname;
-        if(right_obj==undefined){
+        if (right_obj === undefined) {
             continue;
         }
         var path_vec = obj.ccpa.infoname.exercise_path;
@@ -296,22 +303,22 @@ function exist(obj) {
         } else {
             console.log("no node");
         }
-        if(right_obj.finish){
+        if (right_obj.finish) {
             // locked, return it
-            arr[i]=-1;
+            arr[i] = -1;
             continue;
         }
-        var current_url = window.location.hostname+window.location.pathname;
+        var current_url = window.location.hostname + window.location.pathname;
         // whether current_url is in the path
-        for(var j=0;j<path_vec.length;j++){
-            if(path_vec[j].page === window.location.hostname+window.location.pathname){ // todo
-                if(j===path_vec.length-1){ // todo
+        for (var j = 0; j < path_vec.length; j++) {
+            if (path_vec[j].page === window.location.hostname + window.location.pathname) { // todo
+                if (j === path_vec.length - 1) { // todo
                     // this is the last, append
-                    arr[i]=0;
+                    arr[i] = 0;
                     break;
-                }else{
+                } else {
                     // not the last, follow
-                    arr[i]=1;
+                    arr[i] = 1;
                     break;
                 }
             }
