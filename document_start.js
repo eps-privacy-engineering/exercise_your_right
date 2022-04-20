@@ -257,26 +257,48 @@ function useOptOut(JSONDict) {
     }
 }
 
+
+// TODO @Joy:
+// arr[i]==-1 locked
+// arr[i]==0 last node in the list, append
+// arr[i] == 1 not the last, follow the list
+// arr[i]==2 hard fork, overwrite
 function exist(obj) {
-    var path_vec = obj.ccpa.ccpa_do_not_sell.exercise_path;
-    var node = path_vec[path_vec.length - 1];
-    if (node) {
-        console.log("node: ", node.page);
-    } else {
-        console.log("no node");
+    var arr = new Array(info_list.length)
+    for (let i = 0; i < info_list.length; i++) {
+        arr[i]=2;
+        var infoname = info_list[i];
+        console.log("pathvec "+info_list[i]+" " + obj.ccpa.infoname);
+        var right_obj = obj.ccpa.infoname;
+        var path_vec = obj.ccpa.infoname.exercise_path;
+        var lastNode = path_vec[path_vec.length - 1];
+        if (lastNode) {
+            console.log("node: ", node.page);
+        } else {
+            console.log("no node");
+        }
+        if(right_obj.finish){
+            // locked, return it
+            arr[i]=-1;
+            continue;
+        }
+        var current_url = window.location.hostname+window.location.pathname;
+        // whether current_url is in the path
+        for(int j=0;j<path_vec.length;j++){
+            if(path_vec[j].page == window.location.hostname+window.location.pathname){
+                if(j==path_vec.length-1){
+                    // this is the last, append
+                    arr[i]=0;
+                    break;
+                }else{
+                    // not the last, follow
+                    arr[i]=1;
+                    break;
+                }
+            }
+        }
     }
-
-    // var current_url = ;
-
-    // whether current_url is in the path
-    var in_path = true;
-
-
-    if (in_path) {
-
-    }
-
-
+    return arr;
 }
 
 
