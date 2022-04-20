@@ -232,6 +232,48 @@ function useOptOut(JSONDict) {
     }
 }
 
+function exist_prev_version(obj, all_key_word) {
+    var arr = exist(obj);
+    console.log("arr: ", arr);
+    for (let i = 0; i < info_list.length; i++) {
+        console.log("info - arr: ", info_list[i],arr[i]);
+        if (arr[i] === -1 || arr[i] === 1){}
+        else if (arr[i] === 0){generate_json_attribure(i, obj, 0, all_key_word);}
+        else if (arr[i] === 2){generate_json_attribure(i, obj, 1, all_key_word);}
+    }
+}
+function exist_notes(obj, all_key_word) {
+        // // if node already in the path
+        // var current_url = window.location.hostname + window.location.pathname
+        // for (const node of dict["exercise_path"]) {
+        //     if (current_url===node.page){
+        //         return;
+        //     }
+        // }
+        // var path_vec = obj.ccpa.ccpa_do_not_sell.exercise_path;
+        // var node = path_vec[path_vec.length - 1];
+        // if (node) {
+        //     console.log("node: ", node.page);
+        // } else {
+        //     console.log("no node");
+        // }
+        // // 判断有没有锁
+        //
+        // // var current_url = ;
+        //
+        // // whether current_url is in the path
+        // var in_path = true;
+        //
+        //
+        // if (in_path) {
+        //     // if there is current_url->next
+        //     // if yes, do nothing; just return
+        //     // if no, update
+        // } else {
+        //     // create
+        // }
+}
+
 // TODO @Joy:
 // arr[i]==-1 locked
 // arr[i]==0 last node in the list, append
@@ -258,9 +300,9 @@ function exist(obj) {
         }
         var current_url = window.location.hostname+window.location.pathname;
         // whether current_url is in the path
-        for(int j=0;j<path_vec.length;j++){
-            if(path_vec[j].page == window.location.hostname+window.location.pathname){
-                if(j==path_vec.length-1){
+        for(var j=0;j<path_vec.length;j++){
+            if(path_vec[j].page === window.location.hostname+window.location.pathname){ // todo
+                if(j===path_vec.length-1){ // todo
                     // this is the last, append
                     arr[i]=0;
                     break;
@@ -292,7 +334,7 @@ function get_and_update(respJSON) {
         generate_json(obj, 1, all_key_word);
     } else {
         console.log("obj.ccpa!==null");
-        exist(obj, all_key_word); //  todo return url to @jack
+        exist_prev_version(obj, all_key_word); //  todo return url to @jack
     }
     console.log("get_and_update end")
 
