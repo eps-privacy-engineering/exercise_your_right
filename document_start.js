@@ -235,6 +235,33 @@ function useOptOut(JSONDict) {
     }
 }
 
+// elemObject: JSON of data gathered from host site (dict_one_host)
+function useOptOut2(JSONDict) {
+    //await sleep(5000);
+    //const text=/http/ig
+    console.log("JSONDict:",JSONDict);
+    var return_dict = {};
+    for (let i = 0; i < info_list.length; i++) {
+        var infoname = info_list[i];
+        console.log("infoname",infoname,JSONDict[info_list[i]]);
+        if (JSONDict.infoname !== undefined) {
+            var path_list = JSONDict.infoname.exercise_path
+            console.log("path_list",path_list);
+            if (path_list !== undefined && path_list.length > 0) {
+                console.log("in path list",infoname);
+                var lastNode = path_list[path_list.length - 1]["page"];
+                if (lastNode && lastNode !== "o") {
+                    let url = lastNode;
+                    console.log("infoname with url in useOptOut2",infoname, url);
+                    return_dict[infoname]=url;
+                }
+            }
+        }
+    }
+    console.log("return_dict:",return_dict);
+    return return_dict;
+}
+
 function exist_prev_version(obj, all_key_word) {
     var arr = exist(obj);
     console.log("arr: ", arr);
@@ -294,7 +321,7 @@ function exist(obj) {
         var infoname = info_list[i];
         console.log("pathvec " + info_list[i] + " " + obj.ccpa[infoname]);
         var right_obj = obj.ccpa[infoname];
-        if (right_obj === undefined || right_obj==null) {
+        if (right_obj === undefined || right_obj === null) {
             continue;
         }
         var path_vec = obj.ccpa[infoname].exercise_path;
@@ -374,17 +401,14 @@ async function get_url(respJSON) {
     let obj = new Object();
     obj = JSON.parse(respJSON);
 
-    console.log("1", respJSON.ccpa)
-    console.log("2", obj.ccpa)
-    console.log("3", obj["ccpa"])
-    console.log("3", (respJSON.ccpa === undefined))
+    console.log("1", obj.ccpa)
     if (obj.ccpa) {
-        console.log("@@respJSON.ccpa", obj.ccpa)
-        let url_ = useOptOut(obj.ccpa);
-        // console.log("in if: url_~~~\n\n\n\n",url_,"\n\n\n\n");
-        chrome.storage.sync.set({url: url_}, function () {
+        console.log("@@obj.ccpa", obj.ccpa)
+        let url_dict_ = useOptOut2(obj.ccpa);
+        // console.log("in if: url_dict~~~\n\n\n\n",url_dict,"\n\n\n\n");
+        chrome.storage.sync.set({url_dict: url_dict_}, function () {
             console.log('stored opt out info is: ');
-            console.log("obj0~~~\n\n\n\n", url_, "\n\n\n\n");
+            console.log("obj0~~~\n\n\n\n", url_dict_, "\n\n\n\n");
         })
     } else {
         console.log("something wrong!");
@@ -396,4 +420,5 @@ async function get_url(respJSON) {
 delayedGreeting().then(function () {
 
 });
+
 
