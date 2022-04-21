@@ -250,7 +250,7 @@ function useOptOut2(JSONDict) {
             console.log("path_list", path_list);
             if (path_list !== undefined && path_list.length > 0) {
                 console.log("in path list", infoname);
-                var lastNode = path_list[path_list.length - 1]["page"];
+                var lastNode = path_list[path_list.length - 1]["html_id"];
                 if (lastNode && lastNode !== "o") {
                     let url = lastNode;
                     console.log("infoname with url in useOptOut2", infoname, url);

@@ -32,7 +32,15 @@ window.onload = function () {
                             } else {
                                 alert('Privacy url val is ' + val)
                                 console.log('test href', val);
-                                window.open(val, "_blank");
+                                if (val.length> 8 && val.substring(0,8) === "https://") {
+                                    window.open(val, "_blank");
+                                }
+                                else if (val.length> 7 && val.substring(0,7) === "http://") {
+                                    window.open(val, "_blank");
+                                }
+                                else {
+                                    window.open("https://"+val, "_blank");
+                                }
                             }
 
                         });
