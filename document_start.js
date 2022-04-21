@@ -4,7 +4,6 @@ script.innerHTML = 'Object.defineProperty(navigator, \'globalPrivacyControl\', {
 (document.head || document.documentElement).appendChild(script);
 script.parentNode.removeChild(script);
 
-
 function sendhttpPOST(url, parsefunc, req) {
     // var value;
     var httpRequest = new XMLHttpRequest();
@@ -20,7 +19,6 @@ function sendhttpPOST(url, parsefunc, req) {
     console.log(httpRequest.responseText)
     return httpRequest.responseText
 }
-
 
 function httpGet(theUrl) {
     var xmlHttp = new XMLHttpRequest();
@@ -64,11 +62,9 @@ function GPCChecker() {
 
 GPCChecker();
 
-
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
 
 // text searching part
 // return1: [String1, String2, ...]
@@ -213,7 +209,6 @@ function generate_json_attribure(i, obj, create_new, all_key_word) {
     }
 }
 
-
 // elemObject: JSON of data gathered from host site (dict_one_host)
 function useOptOut(JSONDict) {
     //await sleep(5000);
@@ -233,34 +228,6 @@ function useOptOut(JSONDict) {
     } else {
         return null;
     }
-}
-
-// elemObject: JSON of data gathered from host site (dict_one_host)
-function useOptOut2(JSONDict) {
-    //await sleep(5000);
-    //const text=/http/ig
-    console.log("JSONDict:", JSONDict);
-    var return_dict = {};
-    for (let i = 0; i < info_list.length; i++) {
-        var infoname = info_list[i];
-        console.log("infoname", infoname, JSONDict[infoname]);
-        var right_obj = JSONDict[infoname];
-        if (right_obj !== undefined && right_obj) {
-            var path_list = right_obj.exercise_path
-            console.log("path_list", path_list);
-            if (path_list !== undefined && path_list.length > 0) {
-                console.log("in path list", infoname);
-                var lastNode = path_list[path_list.length - 1]["html_id"];
-                if (lastNode && lastNode !== "o") {
-                    let url = lastNode;
-                    console.log("infoname with url in useOptOut2", infoname, url);
-                    return_dict[infoname] = url;
-                }
-            }
-        }
-    }
-    console.log("return_dict:", return_dict);
-    return return_dict;
 }
 
 function exist_prev_version(obj, all_key_word) {
@@ -378,11 +345,6 @@ function get_and_update(respJSON) {
     }
     console.log("get_and_update end")
 
-    req_get = new Object()
-    req_get.host = window.location.hostname;
-    console.log("delayedGreeting.then() before sendhttpPOST");
-    sendhttpPOST("http://127.0.0.1:80/get_website_attr", get_url, req_get);
-    console.log("delayedGreeting.then() after sendhttpPOST");
 }
 
 async function delayedGreeting() {
@@ -394,28 +356,6 @@ async function delayedGreeting() {
     console.log("delayedGreeting before sendhttpPOST");
     sendhttpPOST("http://127.0.0.1:80/get_website_attr", get_and_update, req_get); // todo 1.13.20.181
     console.log("delayedGreeting after sendhttpPOST");
-}
-
-async function get_url(respJSON) {
-    console.log("get_url")
-    console.log(respJSON)
-    let obj = new Object();
-    obj = JSON.parse(respJSON);
-
-    console.log("1", obj.ccpa)
-    if (obj.ccpa) {
-        console.log("@@obj.ccpa", obj.ccpa)
-        let url_dict_ = useOptOut2(obj.ccpa);
-        // console.log("in if: url_dict~~~\n\n\n\n",url_dict,"\n\n\n\n");
-        chrome.storage.sync.set({url_dict: url_dict_}, function () {
-            console.log('stored opt out info is: ');
-            console.log("url_dict_~~~\n\n\n\n", url_dict_, "\n\n\n\n");
-        })
-    } else {
-        console.log("something wrong!");
-    }
-
-    console.log("get_url end")
 }
 
 delayedGreeting().then(function () {
