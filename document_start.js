@@ -308,17 +308,17 @@ function exist(obj) {
         var current_url = window.location.hostname + window.location.pathname;
         // whether current_url is in the path
         for (var j = 0; j < path_vec.length; j++) {
-            if (path_vec[j].page === window.location.hostname + window.location.pathname) { // todo
-                if (j === path_vec.length - 1) { // todo
-                    // this is the last, append
-                    arr[i] = 0;
-                    break;
-                } else {
-                    // not the last, follow
-                    arr[i] = 1;
-                    break;
-                }
+            console.log("current_url is ", current_url)
+            console.log("path_vec[j].page is ", path_vec[j].page)
+            if (path_vec[j].page === current_url) {
+                // not the last, follow
+                arr[i] = 1;
+                break;
             }
+        }
+        if (lastNode && lastNode.html_id === current_url) {
+            // this is the last, append
+            arr[i] = 0;
         }
     }
     return arr;
