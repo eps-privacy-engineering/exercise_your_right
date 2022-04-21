@@ -1,44 +1,46 @@
 window.onload = function () {
-	chrome.storage.sync.get(['gpcKey'], function(result) {
-		console.log('GPC value currently is ' + result.gpcKey);
-		document.getElementById("gpc-received").append(result.gpcKey);
-	});
+    chrome.storage.sync.get(['gpcKey'], function (result) {
+        console.log('GPC value currently is ' + result.gpcKey);
+        document.getElementById("gpc-received").append(result.gpcKey);
+    });
 
+    var info_list = ["ccpa_do_not_sell", "ccpa_delete", "Opt-out/in", "ccpa_privacy_policy", "ccpa_copy"];
+    var right_type_list = ["Do Not Sell", "Delete", "Opt Out In", "Privacy Policy", "Copy"];
 
-	document.getElementById('ccpa-button').onclick = function () {
-		let text0 = localStorage.getItem("testJSON");
-		alert(text0);
-		let obj0 = JSON.parse(text0);
-		chrome.tabs.query(
-			{
-				currentWindow: true,    // currently focused window
-				active: true            // selected tab
-			},
-			function (foundTabs) {
-				if (foundTabs.length > 0) {
-					var nowPage = foundTabs[0].url;
-					console.log(foundTabs[0])
-					var url = new URL(nowPage)
-					var keyName=url.hostname;
-					alert(obj0[keyName]);
-					alert("this key name in popup is "+keyName)
-					chrome.storage.sync.get(['url_dict'], function(result) {
-						alert('Privacy info value currently is ' + result.url_dict);
-						// alert('Privacy info value currently is ' + result.optOutKey)
-						if (result.url_dict == null){
-							const para = document.createElement('p');
-							para.innerHTML = "No privacy information available.";
-							document.body.appendChild(para);
-						}
-						else {
-							console.log('test href');
-							window.open(result.url_dict, "_blank");
-						}
-					});
-				} else {
+    for (let i = 0; i < info_list.length; i++) {
+        document.getElementById(info_list[i]).onclick = function () {
+            console.log(info_list[i]);
+            chrome.tabs.query(
+                {
+                    currentWindow: true,    // currently focused window
+                    active: true            // selected tab
+                },
+                function (foundTabs) {
+                    if (foundTabs.length > 0) {
+                        var nowPage = foundTabs[0].url;
+                        console.log(foundTabs[0])
+                        var url = new URL(nowPage)
+                        // var keyName = url.hostname;
+                        // alert("this key name in popup is " + keyName) // ok
+                        chrome.storage.sync.get(['url_dict'], function (result) {
+                            // alert('Privacy info value currently is ' + result.url_dict); // ok
+                            var val = result.url_dict[info_list[i]];
+                            if (val == null) {
+                                const para = document.createElement('p');
+                                para.innerHTML = "No " + right_type_list[i] + " available.";
+                                document.body.appendChild(para);
+                            } else {
+                                alert('Privacy url val is ' + val)
+                                console.log('test href', val);
+                                window.open(val, "_blank");
+                            }
 
-				}
-			}
-		);
-	}
+                        });
+                    } else {
+
+                    }
+                }
+            );
+        }
+    }
 }

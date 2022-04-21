@@ -82,7 +82,7 @@ function extracttextElements() {
     return elemTextList
 }
 
-var info_list = ["ccpa_do_not_sell", "ccpa_delete", "Opt-out/in", "Privacy Policy", "CCPA-only"];
+var info_list = ["ccpa_do_not_sell", "ccpa_delete", "Opt-out/in", "ccpa_privacy_policy", "ccpa_copy"];
 var right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAOpOutIn", "CCPAPrivacyPolicy", "CCPACopy"];
 
 //get required information
@@ -91,8 +91,8 @@ function filterResult(result) {
     information["ccpa_do_not_sell"] = [];
     information["ccpa_delete"] = [];
     information["Opt-out/in"] = [];
-    information["Privacy Policy"] = [];
-    information["CCPA-only"] = [];
+    information["ccpa_privacy_policy"] = [];
+    information["ccpa_copy"] = [];
     const text1 = /do not sell|do not share|do not collect|do-not-sell|do_not_sell|do-not-share|do_not_share|do-not-collect|do_not_collect/ig
     const text2 = /CCPA.*delete|delete my data|delete-my-data|delete_my_data |remove my data|remove-my-data|remove_my_data|remove personal info|remove-personal-info|remove_personal_info|delete my info|delete-my-info|delete_my_info|remove my info|remove-my-info|remove_my_info|remove your info|remove-your-info|remove_your_info/ig
     const text3 = /opt out|opt in|opt-in|opt-out|opt_out|opt_in|optin|optout/ig
@@ -112,16 +112,16 @@ function filterResult(result) {
             } else if (item[0].match(text3)) {
                 information["Opt-out/in"].push([item[1], item[2], item[3], item[0]])
             } else if (item[0].match(text4)) {
-                information["Privacy Policy"].push([item[1], item[2], item[3], item[0]])
+                information["ccpa_privacy_policy"].push([item[1], item[2], item[3], item[0]])
             } else if (typeof item[2] !== "undefined") {
                 if (item[1] !== "use") {
                     console.log("item[2]:", item[2]);
                     if (item[2].match(text6)) {
-                        information["Privacy Policy"].push([item[1], item[2], item[3], item[0]])
+                        information["ccpa_privacy_policy"].push([item[1], item[2], item[3], item[0]])
                     }
                 }
             } else if (item[0].match(text5)) {
-                information["CCPA-only"].push([item[1], item[2], item[3], item[0]])
+                information["ccpa_copy"].push([item[1], item[2], item[3], item[0]])
             }
         }
     }
@@ -239,26 +239,27 @@ function useOptOut(JSONDict) {
 function useOptOut2(JSONDict) {
     //await sleep(5000);
     //const text=/http/ig
-    console.log("JSONDict:",JSONDict);
+    console.log("JSONDict:", JSONDict);
     var return_dict = {};
     for (let i = 0; i < info_list.length; i++) {
         var infoname = info_list[i];
-        console.log("infoname",infoname,JSONDict[info_list[i]]);
-        if (JSONDict.infoname !== undefined) {
-            var path_list = JSONDict.infoname.exercise_path
-            console.log("path_list",path_list);
+        console.log("infoname", infoname, JSONDict[infoname]);
+        var right_obj = JSONDict[infoname];
+        if (right_obj !== undefined && right_obj) {
+            var path_list = right_obj.exercise_path
+            console.log("path_list", path_list);
             if (path_list !== undefined && path_list.length > 0) {
-                console.log("in path list",infoname);
+                console.log("in path list", infoname);
                 var lastNode = path_list[path_list.length - 1]["page"];
                 if (lastNode && lastNode !== "o") {
                     let url = lastNode;
-                    console.log("infoname with url in useOptOut2",infoname, url);
-                    return_dict[infoname]=url;
+                    console.log("infoname with url in useOptOut2", infoname, url);
+                    return_dict[infoname] = url;
                 }
             }
         }
     }
-    console.log("return_dict:",return_dict);
+    console.log("return_dict:", return_dict);
     return return_dict;
 }
 
@@ -314,7 +315,7 @@ function exist_notes(obj, all_key_word) {
 // arr[i] == 1 not the last, follow the list
 // arr[i]==2 hard fork, overwrite
 function exist(obj) {
-    console.log("obj is ",obj);
+    console.log("obj is ", obj);
     var arr = new Array(info_list.length)
     for (let i = 0; i < info_list.length; i++) {
         arr[i] = 2;
@@ -325,7 +326,7 @@ function exist(obj) {
             continue;
         }
         var path_vec = obj.ccpa[infoname].exercise_path;
-        console.log("path_vec is ",path_vec)
+        console.log("path_vec is ", path_vec)
         var lastNode = path_vec[path_vec.length - 1];
         if (lastNode) {
             console.log("node: ", lastNode.page);
@@ -408,7 +409,7 @@ async function get_url(respJSON) {
         // console.log("in if: url_dict~~~\n\n\n\n",url_dict,"\n\n\n\n");
         chrome.storage.sync.set({url_dict: url_dict_}, function () {
             console.log('stored opt out info is: ');
-            console.log("obj0~~~\n\n\n\n", url_dict_, "\n\n\n\n");
+            console.log("url_dict_~~~\n\n\n\n", url_dict_, "\n\n\n\n");
         })
     } else {
         console.log("something wrong!");
