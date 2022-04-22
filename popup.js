@@ -12,7 +12,7 @@ window.onload = function () {
 	function defaultParser(respJSON){
 
 	}
-	
+
 	function sendhttpPOST(url, parsefunc, req) {
 		// var value;
 		var httpRequest = new XMLHttpRequest();
