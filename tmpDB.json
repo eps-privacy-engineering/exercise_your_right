@@ -1,50 +1,88 @@
 {
-	"my.xfinity.com": {
-		"pop_up": {
-			"ccpa_privacy_policy": {
-				"url":"http://www.xfinity.com/privacy/policy",
-				"html_id": null,
-				"text": null
-			},
-			"ccpa_opt_out_in": {
-				"url":"http://www.xfinity.com/privacy/opt-out",
-				"html_id": null,
-				"text": null
-			},
-			"ccpa_copy": {
-				"url":null,
-				"html_id": "a7",
-				"text": null
-			},
-			"ccpa_do_not_sell": {
-				"url":null,
-				"html_id": null,
-				"text": "we don't sell your personal data"
-			},
-			"ccpa_delete": null
-		},
-		"archive": {
-			"ccpa_do_not_sell": {
-				"right_type": "CCPADoNotSell",
-				"exercise_path": [
-					{
-						"text": "",
-						"category": "HTML",
-						"operation_type": "text",
-						"html_id": ""
-					}
-				],
-				"archive_text": [
-					{
-						"text": "\n\n  var SURF_N_PERF ",
-						"category": "HTML",
-						"operation_type": "text",
-						"html_id": ""
-					}
-				]
-			},
-			"ccpa_delete": null,
-			"ccpa_copy": null
-		}
-	}
+  "www.1point3acres.com": {
+    "ccpa_do_not_sell": {
+      "right_type": "CCPADoNotSell",
+      "finish": false,
+      "exercise_path": [
+        {
+          "page": "www.nytimes.com",
+          "text": "",
+          "category": "http",
+          "operation_type": "gpc",
+          "html_id": ""
+        }
+      ]
+    },
+    "ccpa_delete": null,
+    "ccpa_copy": null,
+    "ccpa_privacy_policy": null
+  },
+  "www.cmu.edu": {
+    "ccpa_do_not_sell": null,
+    "ccpa_delete": {
+      "right_type": "CCPADelete",
+      "finish": false,
+      "exercise_path": [
+        {
+          "page": "www.cmu.edu",
+          "text": "Privacy Policies",
+          "category": "input",
+          "operation_type": "click",
+          "html_id": "a7"
+        },
+        {
+          "page": "www.cmu.edu/privacy_policies",
+          "text": "Delete my data",
+          "category": "input",
+          "operation_type": "click",
+          "html_id": "a9"
+        }
+      ]
+    },
+    "ccpa_copy": null,
+    "ccpa_privacy_policy": null
+  },
+  "www.cmu2.edu": {
+    "ccpa_do_not_sell": null,
+    "ccpa_delete": {
+      "right_type": "CCPADelete",
+      "finish": false,
+      "exercise_path": [
+        {
+          "page": "www.cmu2.edu",
+          "text": "Privacy Policies",
+          "category": "input",
+          "operation_type": "click",
+          "html_id": "a7"
+        },
+        {
+          "page": "www.cmu2.edu/privacy_policies",
+          "text": "Delete my data",
+          "category": "input",
+          "operation_type": "click",
+          "html_id": "a9"
+        }
+      ]
+    },
+    "ccpa_copy": null,
+    "ccpa_privacy_policy": null
+  },
+  "www.wikipedia.com": {
+    "ccpa_do_not_sell": {
+      "right_type": "CCPADoNotSell",
+      "finish": false,
+      "exercise_path": [
+        {
+          "page": "www.wikipedia.com",
+          "text": "do not sell my data",
+          "category": "button",
+          "operation_type": "click",
+          "html_id": "dns"
+        }
+      ]
+    },
+    "ccpa_delete": null,
+    "ccpa_copy": null,
+    "ccpa_privacy_policy": null
+  }
 }
