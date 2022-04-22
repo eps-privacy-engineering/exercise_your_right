@@ -307,7 +307,7 @@ function exist(obj) {
         }
         var path_vec = obj.ccpa[infoname].exercise_path;
         console.log("path_vec is ", path_vec)
-        if (path_vec === null || path_vec.length === 0){
+        if (path_vec === null || path_vec.length === 0) {
             arr[i] = 2;
             continue;
         }
