@@ -6,24 +6,30 @@ window.onload = function () {
 
     var info_list = ["ccpa_do_not_sell", "ccpa_delete", "Opt-out/in", "ccpa_privacy_policy", "ccpa_copy"];
     var right_type_list = ["Do Not Sell", "Delete", "Opt Out In", "Privacy Policy", "Copy"];
+	var finish_list = ["ccpa_finish_do_not_sell","ccpa_finish_delete","ccpa_finish_privacy_policy","ccpa_finish_copy"];
+	var backend_right_type_list = ["CCPADoNotSell","CCPADelete","CCPAPrivacyPolicy","CCPAFinishCopy"];
 
+	function defaultParser(respJSON){
+
+	}
+	
+	function sendhttpPOST(url, parsefunc, req) {
+		// var value;
+		var httpRequest = new XMLHttpRequest();
+		httpRequest.onreadystatechange = function () {
+			if (httpRequest.readyState === 4 && httpRequest.status === 200) {
+				var json = httpRequest.responseText;
+				parsefunc(json)
+			}
+		};
+		httpRequest.open('POST', url, true);
+		var reqJSON = JSON.stringify(req)
+		httpRequest.send(reqJSON);
+		console.log(httpRequest.responseText)
+		return httpRequest.responseText
+	}
 
     for (let i = 0; i < info_list.length; i++) {
-        function sendhttpPOST(url, parsefunc, req) {
-            // var value;
-            var httpRequest = new XMLHttpRequest();
-            httpRequest.onreadystatechange = function () {
-                if (httpRequest.readyState === 4 && httpRequest.status === 200) {
-                    var json = httpRequest.responseText;
-                    parsefunc(json)
-                }
-            };
-            httpRequest.open('POST', url, true);
-            var reqJSON = JSON.stringify(req)
-            httpRequest.send(reqJSON);
-            console.log(httpRequest.responseText)
-            return httpRequest.responseText
-        }
 
 // elemObject: JSON of data gathered from host site (dict_one_host)
         function useOptOut2(JSONDict) {
@@ -115,6 +121,26 @@ window.onload = function () {
                 })
         }
     }
+	for (let i = 0; i < finish_list.length; i++) {
+		document.getElementById(finish_list[i]).onclick = function () {
+			console.log(finish_list[i]);
+			chrome.tabs.query(
+				{
+					currentWindow: true,    // currently focused window
+					active: true            // selected tab
+				},
+				function (foundTabs) {
+					if (foundTabs.length > 0) {
+						var reqFinish = new Object();
+						var url_str = foundTabs[0].url;
+						let url_ = new URL(url_str);
+						reqFinish.host = url_.hostname;
+						reqFinish.right_type = backend_right_type_list[i];
+						sendhttpPOST("http://127.0.0.1:80/finish_path",defaultParser,reqFinish);
+					}
+				})
+		}
+	}
 
     // for (let i = 0; i < info_list.length; i++) {
     //     document.getElementById(info_list[i]).onclick = function () {
