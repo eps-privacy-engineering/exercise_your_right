@@ -112,8 +112,12 @@ function filterResult(result) {
             } else if (typeof item[2] !== "undefined") {
                 if (item[1] !== "use") {
                     console.log("item[2]:", item[2]);
-                    if (item[2].match(text6)) {
-                        information["ccpa_privacy_policy"].push([item[1], item[2], item[3], item[0]])
+                    try {
+                        if (item[2].match(text6)) {
+                            information["ccpa_privacy_policy"].push([item[1], item[2], item[3], item[0]])
+                        }
+                    } catch (error) {
+                        console.error("in item[2].match(text6)", error);
                     }
                 }
             } else if (item[0].match(text5)) {
@@ -126,9 +130,9 @@ function filterResult(result) {
 
 function generate_json(obj, create_new, all_key_word) {
     for (let i = 0; i < info_list.length; i++) {
-        if (all_key_word[info_list[i]].length > 0) {
-            generate_json_attribure(i, obj, create_new, all_key_word)
-        }
+        // if (all_key_word[info_list[i]].length > 0) {
+        generate_json_attribure(i, obj, create_new, all_key_word)
+        // }
     }
 }
 
@@ -205,6 +209,15 @@ function generate_json_attribure(i, obj, create_new, all_key_word) {
         req_update.host = window.location.hostname;
         req_update.exercise_detail = dict;
         console.log("dict", dict);
+        sendhttpPOST("http://127.0.0.1:80/update_website_attr", testParser, req_update)
+    } else {
+        req_update = new Object()
+        req_update.host = window.location.hostname;
+        dict = {};
+        dict["right_type"] = right_type_list[i];
+        dict["exercise_path"] = null;
+        req_update.exercise_detail = dict;
+        console.log("dict no node", dict);
         sendhttpPOST("http://127.0.0.1:80/update_website_attr", testParser, req_update)
     }
 }
