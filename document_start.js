@@ -117,7 +117,7 @@ function filterResult(result) {
                             information["ccpa_privacy_policy"].push([item[1], item[2], item[3], item[0]])
                         }
                     } catch (error) {
-                        console.error("in item[2].match(text6)", error);
+                        console.log("in item[2].match(text6)", error);
                     }
                 }
             } else if (item[0].match(text5)) {
@@ -307,6 +307,10 @@ function exist(obj) {
         }
         var path_vec = obj.ccpa[infoname].exercise_path;
         console.log("path_vec is ", path_vec)
+        if (path_vec === null || path_vec.length === 0){
+            arr[i] = 2;
+            continue;
+        }
         var lastNode = path_vec[path_vec.length - 1];
         if (lastNode) {
             console.log("node: ", lastNode.page);
