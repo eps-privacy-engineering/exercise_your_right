@@ -6,13 +6,13 @@ window.onload = function () {
 
     var info_list = ["ccpa_do_not_sell", "ccpa_delete", "Opt-out/in", "ccpa_privacy_policy", "ccpa_copy"];
     var right_type_list = ["Do Not Sell", "Delete", "Opt Out In", "Privacy Policy", "Copy"];
-	var finish_list = ["ccpa_finish_do_not_sell","ccpa_finish_delete","ccpa_finish_privacy_policy","ccpa_finish_copy"];
-	var backend_right_type_list = ["CCPADoNotSell","CCPADelete","CCPAPrivacyPolicy","CCPAFinishCopy"];
+    var finish_list = ["ccpa_finish_do_not_sell", "ccpa_finish_delete", "ccpa_finish_privacy_policy", "ccpa_finish_copy"];
+    var backend_right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAPrivacyPolicy", "CCPAFinishCopy"];
 
-	function defaultParser(respJSON){
+    function defaultParser(respJSON) {
 
 	}
-	
+
 	function sendhttpPOST(url, parsefunc, req) {
 		// var value;
 		var httpRequest = new XMLHttpRequest();
@@ -44,7 +44,7 @@ window.onload = function () {
                 if (right_obj !== undefined && right_obj) {
                     var path_list = right_obj.exercise_path
                     console.log("path_list", path_list);
-                    if (path_list !== undefined && path_list.length > 0) {
+                    if (path_list !== undefined && path_list !== null && path_list.length > 0) {
                         console.log("in path list", infoname);
                         var lastNode = path_list[path_list.length - 1]["html_id"];
                         if (lastNode && lastNode !== "o") {
@@ -121,26 +121,26 @@ window.onload = function () {
                 })
         }
     }
-	for (let i = 0; i < finish_list.length; i++) {
-		document.getElementById(finish_list[i]).onclick = function () {
-			console.log(finish_list[i]);
-			chrome.tabs.query(
-				{
-					currentWindow: true,    // currently focused window
-					active: true            // selected tab
-				},
-				function (foundTabs) {
-					if (foundTabs.length > 0) {
-						var reqFinish = new Object();
-						var url_str = foundTabs[0].url;
-						let url_ = new URL(url_str);
-						reqFinish.host = url_.hostname;
-						reqFinish.right_type = backend_right_type_list[i];
-						sendhttpPOST("http://127.0.0.1:80/finish_path",defaultParser,reqFinish);
-					}
-				})
-		}
-	}
+    for (let i = 0; i < finish_list.length; i++) {
+        document.getElementById(finish_list[i]).onclick = function () {
+            console.log(finish_list[i]);
+            chrome.tabs.query(
+                {
+                    currentWindow: true,    // currently focused window
+                    active: true            // selected tab
+                },
+                function (foundTabs) {
+                    if (foundTabs.length > 0) {
+                        var reqFinish = new Object();
+                        var url_str = foundTabs[0].url;
+                        let url_ = new URL(url_str);
+                        reqFinish.host = url_.hostname;
+                        reqFinish.right_type = backend_right_type_list[i];
+                        sendhttpPOST("http://127.0.0.1:80/finish_path", defaultParser, reqFinish);
+                    }
+                })
+        }
+    }
 
     // for (let i = 0; i < info_list.length; i++) {
     //     document.getElementById(info_list[i]).onclick = function () {
