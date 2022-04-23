@@ -4,10 +4,10 @@ window.onload = function () {
         document.getElementById("gpc-received").append(result.gpcKey);
     });
 
-    var info_list = ["ccpa_do_not_sell", "ccpa_delete", "Opt-out/in", "ccpa_privacy_policy", "ccpa_copy"];
-    var right_type_list = ["Do Not Sell", "Delete", "Opt Out In", "Privacy Policy", "Copy"];
-    var finish_list = ["ccpa_finish_do_not_sell", "ccpa_finish_delete", "ccpa_finish_privacy_policy", "ccpa_finish_copy"];
-    var backend_right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAPrivacyPolicy", "CCPAFinishCopy"];
+    var info_list = ["ccpa_do_not_sell", "ccpa_delete", "ccpa_privacy_policy"];
+    var right_type_list = ["Do Not Sell", "Delete", "Privacy Policy"];
+    var finish_list = ["ccpa_finish_do_not_sell", "ccpa_finish_delete", "ccpa_finish_privacy_policy"];
+    var backend_right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAPrivacyPolicy"];
 
     function defaultParser(respJSON) {
 
