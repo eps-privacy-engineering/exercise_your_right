@@ -7,14 +7,48 @@
 </head>
 <body>
 
+<p>
+    <h3>About this window:</h3>
+    Hi! This pop-up window is where we help you find privacy-related information and exercise your privacy rights as you browse the web. The two key elements of our extension are:
+<ol>
+    <h4>Global Privacy Control (GPC) signal:</h4>
+    <li>Global Privacy Control is an HTTP header that our extension sends to websites as you browse the web. This tells websites you visit that you want to opt-out of the sale of your data. This signal was proposed to help consumers exercise their rights under the California Consumer Privacy Protection Act (CCPA), and while sites are not required to tell consumers whether they have received this signal, some sites do this. When they do, we let you know by indicating a true or false value based on our ability to detect that the signal was received.</li>
+    <h4>Finding privacy-related information for you:</h4>
+    <li>Below are many buttons that correspond to different privacy resources you may want to consult as you browse the web. Our extension finds these resources, and when you click on the corresponding button, we will take you to these resources. The buttons will appear green when we are able to detect a given resource!</li>
+    <ul>
+        <b>Find Do Not Sell:</b>
+        <li>Our extension tries to detect the link with the text "Do Not Sell My Personal Information" that CCPA compliant sites may provide.</li>
+        <b>Delete My Data:</b>
+        <li>Takes you to a page that will help you ask a site to delete the data they have collected on you.</li>
+        <b>Find Privacy Policy</b>
+        <li>Takes you to a site's privacy policy</li>
+        <b>Finish Do not Sell</b>
+        <li>Helps you find the next page to complete the actions required to opt-out of the sale of personal information.</li>
+        <b>Finish Delete</b>
+        <li>Helps you find the next page to complete the actions required to delete the data a site may collect on you.</li>
+        <b>Finish Privacy Policy</b>
+        <li>Helps you find a company's full privacy policy.</li>
+
+    </ul>
+</ol>
+
+</p>
+
+<hr>
+
 <p id="gpc-received">
     GPC received:
 </p>
+
+<hr>
 
 <p>
     When you click on the button below, privacy information will either appear in this pop-up, or you will be redirected
     to a new page
 </p>
+
+<hr>
+
 <!--var info_list = ["ccpa_do_not_sell", "ccpa_delete", "Opt-out/in", "ccpa_privacy_policy", "ccpa_copy"];-->
 <input type="button" class="button" id="ccpa_do_not_sell" value="Find Do Not Sell"/>
 <input type="button" class="button" id="ccpa_delete" value="Delete My Data"/>

@@ -74,6 +74,9 @@ window.onload = function () {
                 var val = url_dict_[info_list[i]];
                 console.log('info_list[i]', i, info_list[i]);
                 console.log('val', val);
+                if (val){
+                    document.getElementById(info_list[i]).className = "updateButton";
+                }
                 dict[info_list[i]]=val;
             } else {
                 console.log("something wrong!");
@@ -81,6 +84,12 @@ window.onload = function () {
             console.log("get_url end")
         }
 
+        // function set_button_color(){
+        //     window.onclick = function (){
+        //
+        //     }
+        //     console.log(document.getElementById(info_list[i]).style.backgroundColor='90EE90FF');
+        // }
         function is_available() {
             chrome.tabs.query(
                 {
