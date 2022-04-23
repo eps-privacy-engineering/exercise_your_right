@@ -9,6 +9,7 @@ window.onload = function () {
     var finish_list = ["ccpa_finish_do_not_sell", "ccpa_finish_delete", "ccpa_finish_privacy_policy"];
     var backend_right_type_list = ["CCPADoNotSell", "CCPADelete", "CCPAPrivacyPolicy"];
 
+    var dict={"ccpa_do_not_sell": false, "ccpa_delete": false, "ccpa_privacy_policy": false};
     function defaultParser(respJSON) {
 
 	}
@@ -30,7 +31,7 @@ window.onload = function () {
 	}
 
     for (let i = 0; i < info_list.length; i++) {
-
+        is_available();
 // elemObject: JSON of data gathered from host site (dict_one_host)
         function useOptOut2(JSONDict) {
             //await sleep(5000);
@@ -73,34 +74,14 @@ window.onload = function () {
                 var val = url_dict_[info_list[i]];
                 console.log('info_list[i]', i, info_list[i]);
                 console.log('val', val);
-                pop_up_url(val);
+                dict[info_list[i]]=val;
             } else {
                 console.log("something wrong!");
             }
-
             console.log("get_url end")
         }
 
-        function pop_up_url(val) {
-            console.log('in pop_up_url', val);
-            if (val == null) {
-                const para = document.createElement('p');
-                para.innerHTML = "No " + right_type_list[i] + " available.";
-                document.body.appendChild(para);
-            } else {
-                alert('Privacy url val is ' + val)
-                console.log('test href', val);
-                if (val.length > 8 && val.substring(0, 8) === "https://") {
-                    window.open(val, "_blank");
-                } else if (val.length > 7 && val.substring(0, 7) === "http://") {
-                    window.open(val, "_blank");
-                } else {
-                    window.open("https://" + val, "_blank");
-                }
-            }
-        }
-
-        document.getElementById(info_list[i]).onclick = function () {
+        function is_available() {
             chrome.tabs.query(
                 {
                     currentWindow: true,    // currently focused window
@@ -119,6 +100,29 @@ window.onload = function () {
                         console.log("delayedGreeting.then() after sendhttpPOST");
                     }
                 })
+        }
+    }
+    for (let i = 0; i < info_list.length; i++) {
+        document.getElementById(info_list[i]).onclick = function (){
+            pop_up_url(dict[info_list[i]]);
+            function pop_up_url(val) {
+                console.log('in pop_up_url', val);
+                if (val == null) {
+                    const para = document.createElement('p');
+                    para.innerHTML = "No " + right_type_list[i] + " available.";
+                    document.body.appendChild(para);
+                } else {
+                    alert('Privacy url val is ' + val)
+                    console.log('test href', val);
+                    if (val.length > 8 && val.substring(0, 8) === "https://") {
+                        window.open(val, "_blank");
+                    } else if (val.length > 7 && val.substring(0, 7) === "http://") {
+                        window.open(val, "_blank");
+                    } else {
+                        window.open("https://" + val, "_blank");
+                    }
+                }
+            }
         }
     }
     for (let i = 0; i < finish_list.length; i++) {
